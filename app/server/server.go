@@ -18,7 +18,7 @@ func NewServer() *Server {
 
 func (s *Server) Run() {
 	server := http.Server{
-		Addr:    ":8000",
+		Addr:    ":8080",
 		Handler: s.router,
 	}
 	server.ListenAndServe()

@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  app:
+    container_name: sns-app
+    build: ./app
+    volumes:
+      - ./app:/go/src/app
+    ports:
+      - 8000:8080
+    tty: true
+  
