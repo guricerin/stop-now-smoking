@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	u "github.com/guricerin/stop-now-smoking/util"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -16,12 +17,12 @@ func NewServer() *Server {
 	return &server
 }
 
-func (s *Server) Run() {
+func (s *Server) Run() error {
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: s.router,
 	}
-	server.ListenAndServe()
+	return server.ListenAndServe()
 }
 
 func (s *Server) setupRouter() {
@@ -33,5 +34,6 @@ func (s *Server) setupRouter() {
 }
 
 func (s *Server) index(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	u.Ilog.Printf("index")
 	writeHtml(w, nil, "layout", "navbar.pub", "index")
 }
