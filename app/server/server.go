@@ -47,6 +47,8 @@ func (s *Server) setupRouter() {
 	router.GET("/logout", s.logout)
 	router.GET("/signup", s.showSignup)
 	router.POST("/signup", s.createUser)
+	router.GET("/delete-account", s.showDeleteAccount)
+	router.POST("/delete-account", s.deleteAccount)
 
 	s.router = router
 }

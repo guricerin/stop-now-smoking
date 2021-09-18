@@ -127,3 +127,53 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, req, "/", http.StatusFound)
 }
+
+// GET /delete-account
+func (s *Server) showDeleteAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	user, _, err := s.fetchAccountFromCookie(req)
+	if err != nil {
+		Wlog.Printf("guest access GET /delete-account: %v", err)
+		return
+	}
+
+	vm := ViewModel{
+		LoginUser: toUserViewModel(user),
+	}
+	writeHtml(w, vm, "layout", "navbar.prv", "delete-account")
+}
+
+// POST /delete-account
+func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	user, sess, err := s.fetchAccountFromCookie(req)
+	if err != nil {
+		Wlog.Printf("guest access POST /delete-account: %v", err)
+		return
+	}
+	err = req.ParseForm()
+	if err != nil {
+		Elog.Printf("ParseForm() error: %v", err)
+		return
+	}
+
+	r := req.FormValue("delete")
+	switch r {
+	case "yes":
+		if err = s.userStore.DeleteById(user.Id); err != nil {
+			Elog.Printf("%v", err)
+			return
+		}
+		if err = s.sessionStore.DeleteByUuid(sess.Uuid); err != nil {
+			Elog.Printf("%v", err)
+			return
+		}
+
+		Ilog.Printf("@%s: delete account", user.AccountId)
+		s.deleteCookie(w)
+		http.Redirect(w, req, "/", http.StatusFound)
+	default:
+		Ilog.Printf("@%s: not delete account", user.AccountId)
+		http.Redirect(w, req, "/", http.StatusFound)
+	}
+}

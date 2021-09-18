@@ -1,0 +1,16 @@
+{{ define "content" }}
+
+<div>
+    <p>以下のアカウントを削除し、本サービスから退会します。</p>
+    <ul>
+        <li>アカウント名 : {{ .LoginUser.Name }}</li>
+        <li>アカウントID : {{ .LoginUser.AccountId }}</li>
+    </ul>
+    <p>退会しますか？</p>
+    <form action="/delete-account" method="POST">
+        <button class="btn btn-outline-success my-2 my-sm-0 mr-sm-2" type="submit" name="delete" value="yes">はい</button>
+        <button class="btn btn-outline-success my-2 my-sm-0 mr-sm-2" type="submit" name="delete" value="no">いいえ</button>
+    </form>
+</div>
+
+{{ end }}
