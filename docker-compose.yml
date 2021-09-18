@@ -6,7 +6,33 @@ services:
     build: ./app
     volumes:
       - ./app:/go/src/app
+    depends_on: 
+      - db
     ports:
       - 8000:8080
     tty: true
-  
+
+  db:
+    container_name: sns-db
+    image: mysql:8.0
+    volumes:
+      # - ./db/data:/var/lib/mysql # データ永続化
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: password 
+      TZ: 'Asia/Tokyo'
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment: 
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=password
+    depends_on: 
+      - db
+    ports: 
+      - 8089:80 

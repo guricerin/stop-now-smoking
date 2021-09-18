@@ -1,0 +1,14 @@
+{{ define "content" }}
+
+<form class="center" role="form" action="/login" method="post">
+    <h2>
+        ログイン
+    </h2>
+
+    <input type="text" name="account_id" class="form-control" placeholder="アカウントID（1文字以上の半角英数字）" required>
+    <input type="password" name="password" class="form-control" placeholder="パスワード（8文字以上の半角英数字）" required>
+    <br />
+    <button class="btn btn-outline-success" type="submit">ログイン</button>
+</form>
+
+{{ end }}

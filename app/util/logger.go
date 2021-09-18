@@ -14,7 +14,7 @@ var (
 
 func init() {
 	Dlog = log.New(os.Stdout, "[DEBUG] ", log.Ldate|log.Ltime|log.Llongfile)
-	Ilog = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime)
-	Wlog = log.New(os.Stderr, "[WARN] ", log.Ldate|log.Ltime)
-	Elog = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime)
+	Ilog = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Llongfile)
+	Wlog = log.New(os.Stderr, "[WARN] ", log.Ldate|log.Ltime|log.Llongfile)
+	Elog = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Llongfile)
 }
