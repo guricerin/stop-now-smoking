@@ -7,13 +7,20 @@ import (
 )
 
 func main() {
+	Ilog.Println("loading config file ...")
+	cfg, err := LoadConfig("config.json")
+	Dlog.Printf("cfg: %v", cfg)
+	if err != nil {
+		Elog.Fatalf("load config error: %v", err)
+	}
+
 	Ilog.Println("connecting db ...")
-	db, err := infra.NewMySqlDriver()
+	db, err := infra.NewMySqlDriver(&cfg)
 	if err != nil {
 		Elog.Fatalf("mysql driver error: %v", err)
 	}
 
-	server := server.NewServer(db)
+	server := server.NewServer(&cfg, db)
 	Ilog.Println("starting server ...")
 	err = server.Run()
 	if err != nil {

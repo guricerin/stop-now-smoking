@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,15 +11,17 @@ import (
 )
 
 type Server struct {
+	cfg          *Config
 	router       http.Handler
 	userStore    *userStore
 	sessionStore *sessionStore
 }
 
-func NewServer(db DbDriver) *Server {
+func NewServer(cfg *Config, db DbDriver) *Server {
 	userStore := NewUserStore(db)
 	sessionStore := NewSessionStore(db)
 	server := Server{
+		cfg:          cfg,
 		userStore:    userStore,
 		sessionStore: sessionStore,
 	}
@@ -27,8 +30,9 @@ func NewServer(db DbDriver) *Server {
 }
 
 func (s *Server) Run() error {
+	addr := fmt.Sprintf("%s:%s", s.cfg.ServerHost, s.cfg.ServerPort)
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    addr,
 		Handler: s.router,
 	}
 	return server.ListenAndServe()

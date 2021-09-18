@@ -6,19 +6,22 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/guricerin/stop-now-smoking/util"
 )
 
 type MySqlDriver struct {
 	conn *sql.DB
 }
 
-func NewMySqlDriver() (*MySqlDriver, error) {
-	user := "sns"
-	password := "sns123456789"
-	protocol := "tcp(db:3306)"
-	dbName := "sns_db"
-	dsn := fmt.Sprintf("%s:%s@%s/%s", user, password, protocol, dbName)
-	conn, err := sql.Open("mysql", dsn+"?charset=utf8&parseTime=true&loc=Asia%2FTokyo")
+func NewMySqlDriver(cfg *util.Config) (*MySqlDriver, error) {
+	user := cfg.DbUser
+	password := cfg.DbPassword
+	protocol := cfg.DbProtocol
+	dbName := cfg.DbName
+	option := cfg.DbConnOption
+	dsn := fmt.Sprintf("%s:%s@%s/%s?%s", user, password, protocol, dbName, option)
+	util.Ilog.Printf("dsn: %s", dsn)
+	conn, err := sql.Open("mysql", dsn)
 	if err != nil {
 		err = fmt.Errorf("db open error: %s", err.Error())
 		return nil, err
