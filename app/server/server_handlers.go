@@ -177,3 +177,19 @@ func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps http
 		http.Redirect(w, req, "/", http.StatusFound)
 	}
 }
+
+// GET /users/:account_id
+func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	vm := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case RsrcNotFound:
+		http.NotFound(w, req)
+	case Guest:
+		writeHtml(w, vm, "layout", "navbar.pub", "user-page")
+	case LoginAndRsrcUser:
+		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
+	case LoginButNotRsrcUser:
+		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
+	}
+}

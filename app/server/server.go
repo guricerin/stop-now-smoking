@@ -49,6 +49,7 @@ func (s *Server) setupRouter() {
 	router.POST("/signup", s.createUser)
 	router.GET("/delete-account", s.showDeleteAccount)
 	router.POST("/delete-account", s.deleteAccount)
+	router.GET("/users/:account_id", s.userPage)
 
 	s.router = router
 }
@@ -90,4 +91,31 @@ func (s *Server) deleteCookie(w http.ResponseWriter) {
 		Expires: time.Unix(1, 0),
 	}
 	http.SetCookie(w, &cookie)
+}
+
+// /users/:account_id
+func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm ViewModel) {
+	accountId := ps.ByName("account_id")
+	rsrcUser, err := s.userStore.RetrieveByAccountId(accountId)
+	if err != nil {
+		Ilog.Printf("rsrc user not found: %v", err)
+		vm.LoginState = RsrcNotFound
+		return
+	}
+	vm.RsrcUser = toUserViewModel(rsrcUser)
+
+	loginUser, _, err := s.fetchAccountFromCookie(req)
+	if err != nil {
+		Ilog.Printf("access user is guest: %v", err)
+		vm.LoginState = Guest
+		return
+	}
+	vm.LoginUser = toUserViewModel(loginUser)
+
+	if loginUser == rsrcUser {
+		vm.LoginState = LoginAndRsrcUser
+	} else {
+		vm.LoginState = LoginButNotRsrcUser
+	}
+	return
 }
