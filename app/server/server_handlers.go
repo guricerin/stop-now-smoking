@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/guricerin/stop-now-smoking/entity"
@@ -191,5 +192,9 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
 	case LoginButNotRsrcUser:
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
