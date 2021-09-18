@@ -44,6 +44,7 @@ func (s *Server) setupRouter() {
 	router.GET("/", s.index)
 	router.GET("/login", s.showLogin)
 	router.POST("/login", s.authenticate)
+	router.GET("/logout", s.logout)
 	router.GET("/signup", s.showSignup)
 	router.POST("/signup", s.createUser)
 
@@ -51,13 +52,23 @@ func (s *Server) setupRouter() {
 }
 
 func accessLog(req *http.Request) {
-	Ilog.Printf("%s %s", req.Method, req.URL)
+	Dlog.Printf("%s %s", req.Method, req.URL)
 }
 
 // GET /
 func (s *Server) index(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	accessLog(req)
-	writeHtml(w, nil, "layout", "navbar.pub", "index")
+	user, _, err := s.fetchAccountFromCookie(req)
+	if err == nil {
+		// ログイン済み
+		vm := ViewModel{
+			LoginUser: toUserViewModel(user),
+		}
+		writeHtml(w, vm, "layout", "navbar.prv", "index")
+	} else {
+		// 未ログイン
+		writeHtml(w, nil, "layout", "navbar.pub", "index")
+	}
 }
 
 // GET /login
@@ -99,6 +110,22 @@ func (s *Server) authenticate(w http.ResponseWriter, req *http.Request, ps httpr
 		//todo
 		Ilog.Printf("@%s : login failed. account_id or password is wrong.", user.AccountId)
 	}
+}
+
+// GET /logout
+func (s *Server) logout(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	cookie, err := req.Cookie("_cookie")
+	if err != http.ErrNoCookie {
+		Ilog.Println("session delete")
+		uuid := cookie.Value
+		err = s.sessionStore.DeleteByUuid(uuid)
+		if err != nil {
+			Wlog.Printf("delete session by uuid error: %v", err)
+		}
+	}
+	s.deleteCookie(w)
+	http.Redirect(w, req, "/", http.StatusFound)
 }
 
 // GET /signup

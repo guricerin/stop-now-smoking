@@ -66,10 +66,15 @@ func (store *sessionStore) Create(u entity.User) (sess entity.Session, err error
 
 func (store *sessionStore) RetrieveByUuid(uuid string) (sess entity.Session, err error) {
 	table := sessionTable{}
-	err = store.db.QueryRow("select id, uuid, user_id, created_at from user_sessions where uuid = ?", uuid).Scan(&table.Id, &table.Uuid, &table.UserId, &table.CreatedAt)
+	err = store.db.QueryRow("select id, uuid, user_id, created_at from sessions where uuid = ?", uuid).Scan(&table.Id, &table.Uuid, &table.UserId, &table.CreatedAt)
 	if err != nil {
 		return
 	}
 	sess = toSessionEntity(table)
+	return
+}
+
+func (store *sessionStore) DeleteByUuid(uuid string) (err error) {
+	_, err = store.db.Exec("delete from sessions where uuid = ?", uuid)
 	return
 }

@@ -1,0 +1,34 @@
+{{ define "navbar" }}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">
+        <i class="fas fa-smoking-ban"></i>
+    </a>
+
+    <div class="panel-body ml-sm-2 mr-sm-2">
+        <a href="/users/{{ .Name }}">
+            {{ .Name }}@{{ .AccountId }}
+        </a>
+    </div>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto">
+            <a class="nav-item nav-link" href="/">ホーム</a>
+            <a class="nav-item nav-link" href="/logout">ログアウト</a>
+            <a class="nav-item nav-link" href="/delete-account">退会</a>
+        </div>
+        <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="search">
+            <button class="btn btn-outline-success my-2 my-sm-0 mr-sm-2" type="submit">ID検索</button>
+        </form>
+    </div>
+</nav>
+
+<br />
+
+{{ end }}
