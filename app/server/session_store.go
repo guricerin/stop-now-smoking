@@ -13,16 +13,6 @@ type sessionTable struct {
 	CreatedAt time.Time
 }
 
-func toSessionTable(s entity.Session) (table sessionTable) {
-	table = sessionTable{
-		Id:        int64(s.Id),
-		Uuid:      s.Uuid,
-		UserId:    int64(s.UserId),
-		CreatedAt: s.CreatedAt,
-	}
-	return
-}
-
 func toSessionEntity(t sessionTable) (s entity.Session) {
 	s = entity.Session{
 		Id:        t.Id,
@@ -48,7 +38,7 @@ func (store *sessionStore) Create(u entity.User) (sess entity.Session, err error
 	}
 	table := sessionTable{
 		Uuid:      uuid,
-		UserId:    int64(u.Id),
+		UserId:    u.Id,
 		CreatedAt: time.Now(),
 	}
 	res, err := store.db.Exec("insert into sessions (uuid, user_id, created_at) values (?, ?, ?)", table.Uuid, table.UserId, table.CreatedAt)
