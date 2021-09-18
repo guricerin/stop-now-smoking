@@ -11,19 +11,22 @@ import (
 )
 
 type Server struct {
-	cfg          *Config
-	router       http.Handler
-	userStore    *userStore
-	sessionStore *sessionStore
+	cfg            *Config
+	router         http.Handler
+	userStore      *userStore
+	sessionStore   *sessionStore
+	cigaretteStore *cigaretteStore
 }
 
 func NewServer(cfg *Config, db DbDriver) *Server {
 	userStore := NewUserStore(db)
 	sessionStore := NewSessionStore(db)
+	cigaretteStore := NewCigaretteStore(db)
 	server := Server{
-		cfg:          cfg,
-		userStore:    userStore,
-		sessionStore: sessionStore,
+		cfg:            cfg,
+		userStore:      userStore,
+		sessionStore:   sessionStore,
+		cigaretteStore: cigaretteStore,
 	}
 	server.setupRouter()
 	return &server
