@@ -56,6 +56,7 @@ func (s *Server) setupRouter() {
 	router.GET("/delete-account", s.showDeleteAccount)
 	router.POST("/delete-account", s.deleteAccount)
 	router.GET("/users/:account_id", s.userPage)
+	router.POST("/users/:account_id/add-cigarette", s.addCigarette)
 
 	s.router = router
 }
@@ -100,7 +101,7 @@ func (s *Server) deleteCookie(w http.ResponseWriter) {
 }
 
 // /users/:account_id
-func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm ViewModel) {
+func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm ViewModel, loginUser entity.User) {
 	accountId := ps.ByName("account_id")
 	rsrcUser, err := s.userStore.RetrieveByAccountId(accountId)
 	if err != nil {
@@ -110,7 +111,7 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	}
 	vm.RsrcUser = toUserViewModel(rsrcUser)
 
-	loginUser, _, err := s.fetchAccountFromCookie(req)
+	loginUser, _, err = s.fetchAccountFromCookie(req)
 	if err != nil {
 		Ilog.Printf("access user is guest: %v", err)
 		vm.LoginState = Guest

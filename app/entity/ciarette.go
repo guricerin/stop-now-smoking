@@ -7,5 +7,5 @@ type Cigarette struct {
 	// 吸った本数
 	SmokedCount int
 	UserId      int64
-	CreatedAd   time.Time
+	CreatedAt   time.Time
 }

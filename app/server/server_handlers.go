@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/guricerin/stop-now-smoking/entity"
 	. "github.com/guricerin/stop-now-smoking/util"
@@ -182,7 +184,7 @@ func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps http
 // GET /users/:account_id
 func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	accessLog(req)
-	vm := s.userRsrcViewModel(req, ps)
+	vm, _ := s.userRsrcViewModel(req, ps)
 	switch vm.LoginState {
 	case RsrcNotFound:
 		http.NotFound(w, req)
@@ -192,6 +194,52 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
 	case LoginButNotRsrcUser:
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// POST /users/:account_id/add-cigarette
+func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	vm, loginUser := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case LoginAndRsrcUser:
+		err := req.ParseForm()
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, "500 internal server error", http.StatusInternalServerError)
+			return
+		}
+		cigaretteNumStr := req.FormValue("cigarette_num")
+		cigaretteNum, err := strconv.Atoi(cigaretteNumStr)
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, "500 internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		cigarette := entity.Cigarette{
+			SmokedCount: cigaretteNum,
+			UserId:      loginUser.Id,
+			CreatedAt:   time.Now(),
+		}
+		_, err = s.cigaretteStore.Create(cigarette)
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, "500 internal server error", http.StatusInternalServerError)
+			return
+		}
+		url := fmt.Sprintf("/users/%s", vm.LoginUser.AccountId)
+		http.Redirect(w, req, url, http.StatusFound)
+	case RsrcNotFound:
+		http.NotFound(w, req)
+	case Guest:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case LoginButNotRsrcUser:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
 	default:
 		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
 		Elog.Printf("%v", err)

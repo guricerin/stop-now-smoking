@@ -10,7 +10,7 @@ use `sns_db`;
 
 drop table if exists `users`;
 drop table if exists `sessions`;
-drop table if exists `cigarette`;
+drop table if exists `cigarettes`;
 
 create table `users` (
     `id` serial primary key,
@@ -26,7 +26,7 @@ create table `sessions` (
     `created_at` timestamp not null
 );
 
-create table `cigarette` (
+create table `cigarettes` (
     `id` serial primary key,
     `smoked_count` integer not null,
     `user_id` integer not null,
