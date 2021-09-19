@@ -5,7 +5,19 @@
     <br />
 
     <div>
+        <form action="/add-cigarette" method="POST">
+            <div>
+                <p>私は本日、追加で</p>
+                <input type="number" name="cigarette_num" value="0" min="-100" max="100" data-suffix="本" size="10" />
+                <br />
+                <p>吸いました。</p>
+            </div>
+            <button type="submit" class="btn btn-primary">記録</button>
+        </form>
+        <hr />
+
         <h5>本日吸ったタバコの本数 : </h5>
+        <h5>累計本数 : </h5>
     </div>
 </div>
 

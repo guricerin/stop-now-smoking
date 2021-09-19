@@ -44,6 +44,9 @@ func (s *Server) Run() error {
 func (s *Server) setupRouter() {
 	router := httprouter.New()
 
+	// asset
+	router.ServeFiles("/static/*filepath", http.Dir("static/"))
+
 	router.GET("/", s.index)
 	router.GET("/login", s.showLogin)
 	router.POST("/login", s.authenticate)
