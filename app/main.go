@@ -19,6 +19,7 @@ func main() {
 	if err != nil {
 		Elog.Fatalf("mysql driver error: %v", err)
 	}
+	defer db.Close()
 
 	server := server.NewServer(&cfg, db)
 	Ilog.Println("starting server ...")

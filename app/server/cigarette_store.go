@@ -64,3 +64,23 @@ func (store *cigaretteStore) RetrieveById(id int64) (c entity.Cigarette, err err
 	c = toCigarreteEntity(table)
 	return
 }
+
+func (store *cigaretteStore) RetrieveAllByUserId(id int64) ([]entity.Cigarette, error) {
+	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var cigarettes []entity.Cigarette
+	for rows.Next() {
+		var t cigaretteTable
+		err := rows.Scan(&t.Id, &t.SmokedCount, &t.UserId, &t.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		c := toCigarreteEntity(t)
+		cigarettes = append(cigarettes, c)
+	}
+	return cigarettes, nil
+}

@@ -66,3 +66,7 @@ func (d *MySqlDriver) Prepare(statement string) (stmt *sql.Stmt, err error) {
 	stmt, err = d.conn.Prepare(statement)
 	return
 }
+
+func (d *MySqlDriver) Close() {
+	d.conn.Close()
+}

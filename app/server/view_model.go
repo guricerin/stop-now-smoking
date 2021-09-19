@@ -7,6 +7,11 @@ type UserViewModel struct {
 	AccountId string
 }
 
+type CigaretteViewModel struct {
+	TotalSmokedCount      int
+	TotalSmokedCountToday int
+}
+
 func toUserViewModel(u entity.User) UserViewModel {
 	vm := UserViewModel{
 		Name:      u.Name,
@@ -16,7 +21,8 @@ func toUserViewModel(u entity.User) UserViewModel {
 }
 
 type ViewModel struct {
-	LoginState LoginState
-	LoginUser  UserViewModel
-	RsrcUser   UserViewModel
+	LoginState    LoginState
+	LoginUser     UserViewModel
+	RsrcUser      UserViewModel
+	RsrcCigarette CigaretteViewModel
 }

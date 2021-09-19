@@ -184,10 +184,29 @@ func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps http
 // GET /users/:account_id
 func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	accessLog(req)
-	vm, _ := s.userRsrcViewModel(req, ps)
+	vm, rsrcUser := s.userRsrcViewModel(req, ps)
 	switch vm.LoginState {
 	case RsrcNotFound:
 		http.NotFound(w, req)
+		return
+	}
+
+	cigarettes, err := s.cigaretteStore.RetrieveAllByUserId(rsrcUser.Id)
+	if err != nil {
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalSmokedCount := entity.TotalSmokedCount(cigarettes)
+	totalSmokedCountToday := entity.TotalSmokedCountByDate(cigarettes, time.Now())
+	cigaretteViewModel := CigaretteViewModel{
+		TotalSmokedCount:      totalSmokedCount,
+		TotalSmokedCountToday: totalSmokedCountToday,
+	}
+	vm.RsrcCigarette = cigaretteViewModel
+
+	switch vm.LoginState {
 	case Guest:
 		writeHtml(w, vm, "layout", "navbar.pub", "user-page")
 	case LoginAndRsrcUser:
