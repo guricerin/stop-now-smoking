@@ -35,4 +35,4 @@ services:
     depends_on: 
       - db
     ports: 
-      - 8089:80 
+      - 8009:80 
