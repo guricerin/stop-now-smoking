@@ -126,3 +126,16 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	}
 	return
 }
+
+const timeLayout = "2006-01-02"
+
+func (s *Server) parseStartAndEndDate(req *http.Request) (start, end time.Time, err error) {
+	startDateStr := req.URL.Query().Get("start_date")
+	endDateStr := req.URL.Query().Get("end_date")
+	start, err = time.Parse(timeLayout, startDateStr)
+	if err != nil {
+		return
+	}
+	end, err = time.Parse(timeLayout, endDateStr)
+	return
+}

@@ -4,22 +4,42 @@
     <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
     <br />
 
-    <div>
-        {{ if isLoginAndRsrcUserMatch .LoginState }}
-        <form action="/users/{{ .LoginUser.AccountId }}/add-cigarette" method="POST">
-            <div>
-                <p>私は愚かにも本日、追加で</p>
-                <input type="number" name="smoked_count" value="0" min="-100" max="100" data-suffix="本" size="10" />
-                <br />
-                <p>吸いました。</p>
-            </div>
-            <button type="submit" class="btn btn-primary">記録</button>
-        </form>
-        <hr />
-        {{ end }}
+    {{ if isLoginAndRsrcUserMatch .LoginState }}
+    <form action="/users/{{ .LoginUser.AccountId }}/add-cigarette" method="POST">
+        <div>
+            <p>私は愚かにも本日、追加で</p>
+            <input type="number" name="smoked_count" value="0" min="-100" max="100" data-suffix="本" size="10" />
+            <br />
+            <p>吸いました。</p>
+        </div>
+        <button type="submit" class="btn btn-primary">記録</button>
+    </form>
+    <hr />
+    {{ end }}
 
-        <h5>本日吸ったタバコの本数 : {{ .RsrcCigarette.TotalSmokedCountToday }} 本</h5>
-        <h5>累計本数 : {{ .RsrcCigarette.TotalSmokedCount }} 本</h5>
+    <div>
+        <p>本日吸ったタバコの本数 : {{ .RsrcCigarette.TotalSmokedCountToday }} 本</p>
+        <p>累計本数 : {{ .RsrcCigarette.TotalSmokedCount }} 本</p>
+    </div>
+    <hr />
+
+    <div>
+        <h5>日付指定</h5>
+        <form>
+            <!-- /users/{{ .RsrcUser.AccountId }}?start_date=xxx&end_date=xxx -->
+            <div class="form-row" action="/users/{{ .RsrcUser.AccountId }}" method="GET">
+                <div class="col">
+                    <label>開始年月日：</label>
+                    <input type="date" name="start_date" value="" min="2000-01-01" max="2050-12-31">
+                </div>
+                <div class="col">
+                    <label>終了年月日：</label>
+                    <input type="date" name="end_date" value="" min="2000-01-01" max="2050-12-31">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">表示</button>
+        </form>
     </div>
 </div>
 

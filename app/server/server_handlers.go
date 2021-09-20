@@ -212,6 +212,12 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 	}
 	vm.RsrcCigarette = cigaretteViewModel
 
+	startDate, endDate, err := s.parseStartAndEndDate(req)
+	if err == nil {
+		// todo: 日付範囲内のデータフェッチ
+		Ilog.Printf("%v, %v", startDate, endDate)
+	}
+
 	switch vm.LoginState {
 	case Guest:
 		writeHtml(w, vm, "layout", "navbar.pub", "user-page")
