@@ -112,6 +112,12 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 		AccountId: req.PostFormValue("account_id"),
 		Password:  hashedPassword,
 	}
+	if s.userStore.CheckAccountIdExists(user) {
+		// todo: アカウントIDがダブっている
+		Elog.Printf("account_id is dup: %v", user.AccountId)
+		http.Error(w, "account_id is dup", http.StatusInternalServerError)
+		return
+	}
 	user, err = s.userStore.Create(user)
 	if err != nil {
 		Elog.Printf("create user error: %v", err)

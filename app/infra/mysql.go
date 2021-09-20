@@ -68,5 +68,6 @@ func (d *MySqlDriver) Prepare(statement string) (stmt *sql.Stmt, err error) {
 }
 
 func (d *MySqlDriver) Close() {
+	util.Ilog.Printf("db driver closing ...")
 	d.conn.Close()
 }

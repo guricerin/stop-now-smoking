@@ -1,6 +1,8 @@
 package server
 
-import "github.com/guricerin/stop-now-smoking/entity"
+import (
+	"github.com/guricerin/stop-now-smoking/entity"
+)
 
 type userTable struct {
 	Id        int64
@@ -49,6 +51,16 @@ func (repo *userStore) Create(u entity.User) (user entity.User, err error) {
 	}
 	user, err = repo.RetrieveById(id64)
 	return
+}
+
+func (repo *userStore) CheckAccountIdExists(u entity.User) bool {
+	rows, err := repo.db.Query("select * from users where account_id = ?", u.AccountId)
+	if err == nil && rows.Next() {
+		defer rows.Close()
+		return true
+	} else {
+		return false
+	}
 }
 
 func (repo *userStore) RetrieveById(id int64) (u entity.User, err error) {
