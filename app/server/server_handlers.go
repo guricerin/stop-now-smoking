@@ -232,8 +232,7 @@ func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httpr
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
-		cigaretteNumStr := req.FormValue("cigarette_num")
-		cigaretteNum, err := strconv.Atoi(cigaretteNumStr)
+		smoked_count, err := strconv.Atoi(req.FormValue("smoked_count"))
 		if err != nil {
 			Elog.Printf("%v", err)
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
@@ -241,7 +240,7 @@ func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httpr
 		}
 
 		cigarette := entity.Cigarette{
-			SmokedCount: cigaretteNum,
+			SmokedCount: smoked_count,
 			UserId:      loginUser.Id,
 			CreatedAt:   time.Now(),
 		}
