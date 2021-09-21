@@ -18,7 +18,7 @@ func (s *Server) index(w http.ResponseWriter, req *http.Request, ps httprouter.P
 	if err == nil {
 		// ログイン済み
 		vm := ViewModel{
-			LoginUser: toUserViewModel(user),
+			LoginUser: toLoginUserViewModel(user),
 		}
 		writeHtml(w, vm, "layout", "navbar.prv", "index")
 	} else {
@@ -147,7 +147,7 @@ func (s *Server) showDeleteAccount(w http.ResponseWriter, req *http.Request, ps 
 	}
 
 	vm := ViewModel{
-		LoginUser: toUserViewModel(user),
+		LoginUser: toLoginUserViewModel(user),
 	}
 	writeHtml(w, vm, "layout", "navbar.prv", "delete-account")
 }
@@ -204,18 +204,22 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 		return
 	}
 
-	totalSmokedCount := entity.TotalSmokedCount(cigarettes)
-	totalSmokedCountToday := entity.TotalSmokedCountByDate(cigarettes, time.Now())
-	cigaretteViewModel := CigaretteViewModel{
-		TotalSmokedCount:      totalSmokedCount,
-		TotalSmokedCountToday: totalSmokedCountToday,
-	}
-	vm.RsrcCigarette = cigaretteViewModel
+	vm.RsrcUser.TotalSmokedCountAllDate = entity.TotalSmokedCountAllDate(cigarettes)
+	vm.RsrcUser.TotalSmokedCountToday = entity.TotalSmokedCountByDate(cigarettes, time.Now())
+	vm.RsrcUser.TotalSmokedByDate = totalsSmokedByDateViewModel(cigarettes)
 
-	startDate, endDate, err := s.parseStartAndEndDate(req)
+	// URLクエリで指定された日付範囲内のデータフェッチ
+	startDate, endDate, err := s.parseStartAndEndDateQuery(req)
 	if err == nil {
-		// todo: 日付範囲内のデータフェッチ
-		Ilog.Printf("%v, %v", startDate, endDate)
+		// 日付範囲内のデータフェッチ
+		Dlog.Printf("%v, %v", startDate, endDate)
+		cigarettesByDate, err := s.cigaretteStore.RetrieveAllByUserIdAndBetweenDate(rsrcUser.Id, startDate, endDate)
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		vm.RsrcUser.TotalSmokedByDate = totalsSmokedByDateViewModel(cigarettesByDate)
 	}
 
 	switch vm.LoginState {

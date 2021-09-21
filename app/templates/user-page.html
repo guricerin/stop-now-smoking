@@ -14,12 +14,13 @@
         </div>
         <button type="submit" class="btn btn-outline-success">記録</button>
     </form>
+    <small>＊誤記録を修正できるようにするため、マイナスボタンを残してあります。</small>
     <hr />
     {{ end }}
 
     <div>
-        <p>本日吸ったタバコの本数 : {{ .RsrcCigarette.TotalSmokedCountToday }} 本</p>
-        <p>累計本数 : {{ .RsrcCigarette.TotalSmokedCount }} 本</p>
+        <p>本日吸ったタバコの本数 : {{ .RsrcUser.TotalSmokedCountToday }} 本</p>
+        <p>累計本数 : {{ .RsrcUser.TotalSmokedCountAllDate }} 本</p>
     </div>
     <hr />
 
@@ -40,6 +41,15 @@
 
             <button type="submit" class="btn btn-outline-success">表示</button>
         </form>
+        <br />
+
+        <ul>
+            {{ range $date, $count := .RsrcUser.TotalSmokedByDate }}
+            <li>
+                {{ dateFormat $date }} : {{ $count }}本
+            </li>
+            {{ end }}
+        </ul>
     </div>
 </div>
 

@@ -37,7 +37,7 @@ func NewMySqlDriver(cfg *util.Config) (*MySqlDriver, error) {
 }
 
 func tryPing(conn *sql.DB) (err error) {
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 3; i++ {
 		err = conn.Ping()
 		if err == nil {
 			return

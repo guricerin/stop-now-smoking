@@ -109,7 +109,7 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 		vm.LoginState = RsrcNotFound
 		return
 	}
-	vm.RsrcUser = toUserViewModel(rsrcUser)
+	vm.RsrcUser = toRsrcUserViewModel(rsrcUser)
 
 	loginUser, _, err := s.fetchAccountFromCookie(req)
 	if err != nil {
@@ -117,7 +117,7 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 		vm.LoginState = Guest
 		return
 	}
-	vm.LoginUser = toUserViewModel(loginUser)
+	vm.LoginUser = toLoginUserViewModel(loginUser)
 
 	if loginUser == rsrcUser {
 		vm.LoginState = LoginAndRsrcUser
@@ -129,7 +129,7 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 
 const timeLayout = "2006-01-02"
 
-func (s *Server) parseStartAndEndDate(req *http.Request) (start, end time.Time, err error) {
+func (s *Server) parseStartAndEndDateQuery(req *http.Request) (start, end time.Time, err error) {
 	startDateStr := req.URL.Query().Get("start_date")
 	endDateStr := req.URL.Query().Get("end_date")
 	start, err = time.Parse(timeLayout, startDateStr)

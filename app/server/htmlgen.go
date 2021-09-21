@@ -15,7 +15,10 @@ var (
 			return state == LoginAndRsrcUser
 		},
 		"now": func() string {
-			return time.Now().Format("2006-01-02")
+			return time.Now().Format(timeLayout)
+		},
+		"dateFormat": func(t time.Time) string {
+			return t.Format(timeLayout)
 		},
 	}
 )
