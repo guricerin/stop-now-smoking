@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 
 	. "github.com/guricerin/stop-now-smoking/util"
 )
@@ -12,6 +13,9 @@ var (
 	funcMap = map[string]interface{}{
 		"isLoginAndRsrcUserMatch": func(state LoginState) bool {
 			return state == LoginAndRsrcUser
+		},
+		"now": func() string {
+			return time.Now().Format("2006-01-02")
 		},
 	}
 )

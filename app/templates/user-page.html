@@ -12,7 +12,7 @@
             <br />
             <p>吸いました。</p>
         </div>
-        <button type="submit" class="btn btn-primary">記録</button>
+        <button type="submit" class="btn btn-outline-success">記録</button>
     </form>
     <hr />
     {{ end }}
@@ -30,15 +30,15 @@
             <div class="form-row" action="/users/{{ .RsrcUser.AccountId }}" method="GET">
                 <div class="col">
                     <label>開始年月日：</label>
-                    <input type="date" name="start_date" value="" min="2000-01-01" max="2050-12-31">
+                    <input type="date" name="start_date" value="{{ now }}" min="2000-01-01" max="2050-12-31">
                 </div>
                 <div class="col">
                     <label>終了年月日：</label>
-                    <input type="date" name="end_date" value="" min="2000-01-01" max="2050-12-31">
+                    <input type="date" name="end_date" value="{{ now }}" min="2000-01-01" max="2050-12-31">
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">表示</button>
+            <button type="submit" class="btn btn-outline-success">表示</button>
         </form>
     </div>
 </div>
