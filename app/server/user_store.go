@@ -85,6 +85,24 @@ func (repo *userStore) RetrieveByAccountId(account_id string) (u entity.User, er
 	return
 }
 
+func (repo *userStore) SearchAllByAccountId(account_id string) (us []entity.User, err error) {
+	rows, err := repo.db.Query("select id, name, account_id, password from users where account_id like concat(?, '%')", account_id)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		table := userTable{}
+		err = rows.Scan(&table.Id, &table.Name, &table.AccountId, &table.Password)
+		if err != nil {
+			return
+		}
+		us = append(us, toUserEntity(table))
+	}
+	return
+}
+
 func (repo *userStore) Update(u entity.User) (err error) {
 	return
 }

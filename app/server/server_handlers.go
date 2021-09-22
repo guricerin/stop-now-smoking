@@ -280,3 +280,29 @@ func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httpr
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
+// GET /search-account
+func (s *Server) searchAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	accessLog(req)
+	qAccountId := req.URL.Query().Get("account_id")
+	resultUsers, err := s.userStore.SearchAllByAccountId(qAccountId)
+	if err != nil {
+		Elog.Printf("%v", err)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	vm := ViewModel{
+		SearchedUsers: toSearchedUsersViewModel(qAccountId, resultUsers),
+	}
+	loginUser, _, err := s.fetchAccountFromCookie(req)
+	if err != nil {
+		writeHtml(w, vm, "layout", "navbar.pub", "search-account-result")
+	} else {
+		vm.LoginUser = LoginUserViewModel{
+			Name:      loginUser.Name,
+			AccountId: loginUser.AccountId,
+		}
+		writeHtml(w, vm, "layout", "navbar.prv", "search-account-result")
+	}
+}

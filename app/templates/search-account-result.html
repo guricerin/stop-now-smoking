@@ -1,0 +1,16 @@
+{{ define "content" }}
+
+<div>
+    <p>"{{ .SearchedUsers.Query }}" の検索結果</p>
+    <ul>
+        {{ range $user := .SearchedUsers.Results }}
+        <li>
+            <a href="/users/{{ .AccountId }}">
+                {{ .Name }}@{{ .AccountId }}
+            </a>
+        </li>
+        {{ end }}
+    </ul>
+</div>
+
+{{ end }}

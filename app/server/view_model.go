@@ -48,8 +48,33 @@ func totalsSmokedByDateViewModel(cigs []entity.Cigarette) totalSmokedByDateViewM
 	return res
 }
 
+// アカウントID検索結果につかう
+type SearchedUserViewModel struct {
+	Name      string
+	AccountId string
+}
+type SearchedUsersViewModel struct {
+	Query   string
+	Results []SearchedUserViewModel
+}
+
+func toSearchedUsersViewModel(query string, users []entity.User) SearchedUsersViewModel {
+	res := SearchedUsersViewModel{
+		Query:   query,
+		Results: make([]SearchedUserViewModel, len(users)),
+	}
+	for _, user := range users {
+		res.Results = append(res.Results, SearchedUserViewModel{
+			Name:      user.Name,
+			AccountId: user.AccountId,
+		})
+	}
+	return res
+}
+
 type ViewModel struct {
-	LoginState LoginState
-	LoginUser  LoginUserViewModel
-	RsrcUser   RsrcUserViewModel
+	LoginState    LoginState
+	LoginUser     LoginUserViewModel
+	RsrcUser      RsrcUserViewModel
+	SearchedUsers SearchedUsersViewModel
 }
