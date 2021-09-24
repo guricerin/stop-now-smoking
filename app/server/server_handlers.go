@@ -13,7 +13,7 @@ import (
 
 // GET /
 func (s *Server) index(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	user, _, err := s.fetchAccountFromCookie(req)
 	if err == nil {
 		// ログイン済み
@@ -29,13 +29,13 @@ func (s *Server) index(w http.ResponseWriter, req *http.Request, ps httprouter.P
 
 // GET /login
 func (s *Server) showLogin(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	writeHtml(w, nil, "layout", "navbar.pub", "login")
 }
 
 // POST /login
 func (s *Server) authenticate(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	err := req.ParseForm()
 	if err != nil {
 		Elog.Printf("ParseForm() error: %v", err)
@@ -70,7 +70,7 @@ func (s *Server) authenticate(w http.ResponseWriter, req *http.Request, ps httpr
 
 // GET /logout
 func (s *Server) logout(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	cookie, err := req.Cookie("_cookie")
 	if err != http.ErrNoCookie {
 		Ilog.Println("session delete")
@@ -86,13 +86,13 @@ func (s *Server) logout(w http.ResponseWriter, req *http.Request, ps httprouter.
 
 // GET /signup
 func (s *Server) showSignup(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	writeHtml(w, nil, "layout", "navbar.pub", "signup")
 }
 
 // POST /signup
 func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	err := req.ParseForm()
 	if err != nil {
 		Elog.Printf("ParseForm() error: %v", err)
@@ -139,7 +139,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 
 // GET /delete-account
 func (s *Server) showDeleteAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	user, _, err := s.fetchAccountFromCookie(req)
 	if err != nil {
 		Wlog.Printf("guest access GET /delete-account: %v", err)
@@ -154,7 +154,7 @@ func (s *Server) showDeleteAccount(w http.ResponseWriter, req *http.Request, ps 
 
 // POST /delete-account
 func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	user, sess, err := s.fetchAccountFromCookie(req)
 	if err != nil {
 		Wlog.Printf("guest access POST /delete-account: %v", err)
@@ -189,7 +189,7 @@ func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps http
 
 // GET /users/:account_id
 func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	vm, rsrcUser := s.userRsrcViewModel(req, ps)
 	switch vm.LoginState {
 	case RsrcNotFound:
@@ -238,7 +238,7 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 
 // POST /users/:account_id/add-cigarette
 func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	vm, loginUser := s.userRsrcViewModel(req, ps)
 	switch vm.LoginState {
 	case LoginAndRsrcUser:
@@ -283,7 +283,7 @@ func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httpr
 
 // GET /search-account
 func (s *Server) searchAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	accessLog(req)
+	s.accessLog(req)
 	qAccountId := req.URL.Query().Get("account_id")
 	resultUsers, err := s.userStore.SearchAllByAccountId(qAccountId)
 	if err != nil {

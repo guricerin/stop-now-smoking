@@ -62,8 +62,13 @@ func (s *Server) setupRouter() {
 	s.router = router
 }
 
-func accessLog(req *http.Request) {
-	Dlog.Printf("%s %s", req.Method, req.URL)
+func (s *Server) accessLog(req *http.Request) {
+	user, _, err := s.fetchAccountFromCookie(req)
+	if err != nil {
+		Dlog.Printf("guest user %s %s", req.Method, req.URL)
+	} else {
+		Dlog.Printf("%s@%s %s %s", user.Name, user.AccountId, req.Method, req.URL)
+	}
 }
 
 func (s *Server) fetchAccountFromCookie(req *http.Request) (user entity.User, sess entity.Session, err error) {
