@@ -5,16 +5,16 @@
     <br />
 
     {{ if isLoginAndRsrcUserMatch .LoginState }}
-    <form action="/users/{{ .LoginUser.AccountId }}/add-cigarette" method="POST">
+    <form action="/users/{{ .LoginUser.AccountId }}/edit-cigarette-today" method="POST">
         <div>
-            <p>私は愚かにも本日、追加で</p>
-            <input type="number" name="smoked_count" value="0" min="-100" max="100" data-suffix="本" size="10" />
+            <p>私は本日、愚かにも</p>
+            <input type="number" name="smoked_count" value="{{ .RsrcUser.TotalSmokedCountToday }}" min="0" max="99999"
+                data-suffix="本" size="10" />
             <br />
             <p>吸いました。</p>
         </div>
         <button type="submit" class="btn btn-outline-success">記録</button>
     </form>
-    <small>＊誤記録を修正可能にするため、負数を記録できるようにしています。</small>
     <hr />
     {{ end }}
 

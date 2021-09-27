@@ -22,13 +22,13 @@ create table `users` (
 create table `sessions` (
     `id` serial primary key,
     `uuid` text not null,
-    `user_id` integer not null,
+    `user_id` bigint unsigned not null,
     `created_at` timestamp not null
 );
 
 create table `cigarettes` (
     `id` serial primary key,
-    `smoked_count` integer not null,
-    `user_id` integer not null,
+    `smoked_count` int unsigned not null,
+    `user_id` bigint unsigned not null,
     `created_at` timestamp not null
 );

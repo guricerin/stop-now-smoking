@@ -9,15 +9,15 @@ import (
 
 type cigaretteTable struct {
 	Id          int64
-	SmokedCount int
-	UserId      int64
+	SmokedCount uint
+	UserId      uint64
 	CreatedAt   time.Time
 }
 
 func toCigaretteTable(c entity.Cigarette) cigaretteTable {
 	table := cigaretteTable{
 		SmokedCount: c.SmokedCount,
-		UserId:      c.UserId,
+		UserId:      uint64(c.UserId),
 		CreatedAt:   c.CreatedAt,
 	}
 	return table
@@ -27,7 +27,7 @@ func toCigarreteEntity(t cigaretteTable) entity.Cigarette {
 	c := entity.Cigarette{
 		Id:          t.Id,
 		SmokedCount: t.SmokedCount,
-		UserId:      t.UserId,
+		UserId:      int64(t.UserId),
 		CreatedAt:   t.CreatedAt,
 	}
 	return c
@@ -88,11 +88,16 @@ func (store *cigaretteStore) RetrieveAllByUserId(id int64) ([]entity.Cigarette, 
 
 const layout = "2006-01-02"
 
-func (store *cigaretteStore) RetrieveAllByUserIdAndBetweenDate(id int64, start, end time.Time) ([]entity.Cigarette, error) {
+func (store *cigaretteStore) toDateFormat(start, end time.Time) (string, string) {
 	startStr := start.Format(layout)
 	endStr := end.Format(layout)
 	startStr = fmt.Sprintf("%s 00:00:00", startStr)
 	endStr = fmt.Sprintf("%s 23:59:59", endStr)
+	return startStr, endStr
+}
+
+func (store *cigaretteStore) RetrieveAllByUserIdAndBetweenDate(id int64, start, end time.Time) ([]entity.Cigarette, error) {
+	startStr, endStr := store.toDateFormat(start, end)
 	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = ? and created_at between ? and ?", id, startStr, endStr)
 	if err != nil {
 		return nil, err
@@ -110,4 +115,23 @@ func (store *cigaretteStore) RetrieveAllByUserIdAndBetweenDate(id int64, start, 
 		cigarettes = append(cigarettes, c)
 	}
 	return cigarettes, nil
+}
+
+func (store *cigaretteStore) ExistByUserIdAndDate(cig entity.Cigarette) (bool, error) {
+	table := toCigaretteTable(cig)
+	startStr, endStr := store.toDateFormat(table.CreatedAt, table.CreatedAt)
+	rows, err := store.db.Query("select * from cigarettes where user_id = ? and created_at between ? and ?", table.UserId, startStr, endStr)
+	if err != nil {
+		return false, err
+	} else {
+		defer rows.Close()
+		return rows.Next(), nil
+	}
+}
+
+func (store *cigaretteStore) UpdateByUserIdAndDate(cig entity.Cigarette) (err error) {
+	table := toCigaretteTable(cig)
+	startStr, endStr := store.toDateFormat(table.CreatedAt, table.CreatedAt)
+	_, err = store.db.Exec("update cigarettes set smoked_count = ? where user_id = ? and created_at between ? and ?", table.SmokedCount, table.UserId, startStr, endStr)
+	return
 }

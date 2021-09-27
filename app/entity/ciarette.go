@@ -7,18 +7,28 @@ type Cigarette struct {
 	// 吸った本数。
 	// 負数を許容しているのは、誤記録修正のため。
 	// 集計の際は一日あたりの合計が負になる場合に0に直すこと。
-	SmokedCount int
+	SmokedCount uint
 	UserId      int64
 	CreatedAt   time.Time
 }
 
+var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
+
+// 日本時間の年月日（時分秒は捨象）
+func ToJstDate(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, jst)
+}
+
+func EqualForJstDate(t time.Time, s time.Time) bool {
+	t = ToJstDate(t)
+	s = ToJstDate(s)
+	return t.Equal(s)
+}
+
 func TotalSmokedCount(cigarettes []Cigarette) uint {
-	var res = 0
+	var res uint = 0
 	for _, cig := range cigarettes {
 		res += cig.SmokedCount
-	}
-	if res < 0 {
-		res = 0
 	}
 	return uint(res)
 }
@@ -32,11 +42,9 @@ func TotalSmokedCountAllDate(cigarettes []Cigarette) uint {
 	return res
 }
 
-var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
-
 // 指定日付の喫煙記録のみを集計
 func TotalSmokedCountByDate(cigarettes []Cigarette, t time.Time) uint {
-	var res = 0
+	var res uint = 0
 	dt := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, jst)
 	for _, cig := range cigarettes {
 		ctime := cig.CreatedAt
@@ -45,9 +53,6 @@ func TotalSmokedCountByDate(cigarettes []Cigarette, t time.Time) uint {
 		if dt.Equal(cdt) {
 			res += cig.SmokedCount
 		}
-	}
-	if res < 0 {
-		res = 0
 	}
 	return uint(res)
 }

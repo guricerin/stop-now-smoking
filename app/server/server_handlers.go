@@ -236,8 +236,8 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 	}
 }
 
-// POST /users/:account_id/add-cigarette
-func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+// POST /users/:account_id/edit-cigarette-today
+func (s *Server) editCigaretteToday(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	s.accessLog(req)
 	vm, loginUser := s.userRsrcViewModel(req, ps)
 	switch vm.LoginState {
@@ -254,17 +254,34 @@ func (s *Server) addCigarette(w http.ResponseWriter, req *http.Request, ps httpr
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
+		if smoked_count < 0 {
+			Elog.Printf("%v", err)
+			http.Error(w, "403 forbidden", http.StatusForbidden)
+			return
+		}
 
 		cigarette := entity.Cigarette{
-			SmokedCount: smoked_count,
+			SmokedCount: uint(smoked_count),
 			UserId:      loginUser.Id,
 			CreatedAt:   time.Now(),
 		}
-		_, err = s.cigaretteStore.Create(cigarette)
-		if err != nil {
-			Elog.Printf("%v", err)
-			http.Error(w, "500 internal server error", http.StatusInternalServerError)
-			return
+		exist, err := s.cigaretteStore.ExistByUserIdAndDate(cigarette)
+		if !exist || err != nil {
+			Dlog.Printf("not exist, so create cigarette.: %v", err)
+			_, err := s.cigaretteStore.Create(cigarette)
+			if err != nil {
+				Elog.Printf("%v", err)
+				http.Error(w, "500 internal server error", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			Dlog.Printf("exist, so update cigarette.")
+			err = s.cigaretteStore.UpdateByUserIdAndDate(cigarette)
+			if err != nil {
+				Elog.Printf("%v", err)
+				http.Error(w, "500 internal server error", http.StatusInternalServerError)
+				return
+			}
 		}
 		url := fmt.Sprintf("/users/%s", vm.LoginUser.AccountId)
 		http.Redirect(w, req, url, http.StatusFound)
