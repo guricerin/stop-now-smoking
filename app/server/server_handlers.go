@@ -265,6 +265,8 @@ func (s *Server) editCigaretteToday(w http.ResponseWriter, req *http.Request, ps
 			UserId:      loginUser.Id,
 			CreatedAt:   time.Now(),
 		}
+		// duplicate on key を使わないのは
+		// UniqueIdを知るために結局Retrieveする必要があるから。
 		exist, err := s.cigaretteStore.ExistByUserIdAndDate(cigarette)
 		if !exist || err != nil {
 			Dlog.Printf("not exist, so create cigarette.: %v", err)
