@@ -135,3 +135,8 @@ func (store *cigaretteStore) UpdateByUserIdAndDate(cig entity.Cigarette) (err er
 	_, err = store.db.Exec("update cigarettes set smoked_count = ? where user_id = ? and created_at between ? and ?", table.SmokedCount, table.UserId, startStr, endStr)
 	return
 }
+
+func (store *cigaretteStore) DeleteAllByUserId(userId int64) (err error) {
+	_, err = store.db.Exec("delete from cigarettes where user_id = ?", userId)
+	return
+}

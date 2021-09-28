@@ -177,6 +177,10 @@ func (s *Server) deleteAccount(w http.ResponseWriter, req *http.Request, ps http
 			Elog.Printf("%v", err)
 			return
 		}
+		if err = s.cigaretteStore.DeleteAllByUserId(user.Id); err != nil {
+			Elog.Printf("%v", err)
+			return
+		}
 
 		Ilog.Printf("@%s: delete account", user.AccountId)
 		s.deleteCookie(w)
