@@ -11,6 +11,7 @@ use `sns_db`;
 drop table if exists `users`;
 drop table if exists `sessions`;
 drop table if exists `cigarettes`;
+drop table if exists `follows`;
 
 create table `users` (
     `id` serial primary key,
@@ -31,4 +32,10 @@ create table `cigarettes` (
     `smoked_count` int unsigned not null,
     `user_id` bigint unsigned not null,
     `created_at` timestamp not null
+);
+
+create table `follows` (
+    `id` serial primary key,
+    `src_account_id` varchar(255) not null,
+    `dst_account_id` varchar(255) not null
 );

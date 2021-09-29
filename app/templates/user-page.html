@@ -2,12 +2,17 @@
 
 <div>
     <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
+    {{ if isLoginButNoRsrcUser .LoginState }}
+    <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
+        <button type="submit" class="btn btn-outline-success">フォロー</button>
+    </form>
+    {{ end }}
     <br />
 
     {{ if isLoginAndRsrcUserMatch .LoginState }}
     <form action="/users/{{ .LoginUser.AccountId }}/edit-cigarette-today" method="POST">
         <div>
-            <p>私は本日、愚かにも</p>
+            <p>本日わたしは愚かにも</p>
             <input type="number" name="smoked_count" value="{{ .RsrcUser.TotalSmokedCountToday }}" min="0" max="99999"
                 data-suffix="本" size="10" />
             <br />

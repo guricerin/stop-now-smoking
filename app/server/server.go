@@ -16,17 +16,20 @@ type Server struct {
 	userStore      *userStore
 	sessionStore   *sessionStore
 	cigaretteStore *cigaretteStore
+	followStore    *followStore
 }
 
 func NewServer(cfg *Config, db DbDriver) *Server {
 	userStore := NewUserStore(db)
 	sessionStore := NewSessionStore(db)
 	cigaretteStore := NewCigaretteStore(db)
+	followStore := NewFollowStore(db)
 	server := Server{
 		cfg:            cfg,
 		userStore:      userStore,
 		sessionStore:   sessionStore,
 		cigaretteStore: cigaretteStore,
+		followStore:    followStore,
 	}
 	server.setupRouter()
 	return &server
@@ -57,6 +60,8 @@ func (s *Server) setupRouter() {
 	router.POST("/delete-account", s.deleteAccount)
 	router.GET("/users/:account_id", s.userPage)
 	router.POST("/users/:account_id/edit-cigarette-today", s.editCigaretteToday)
+	router.POST("/users/:account_id/follow/:dst_account_id", s.follow)
+	// router.POST("/users/:account_id/unfollow", s.unfollow)
 	router.GET("/search-account", s.searchAccount)
 
 	s.router = router

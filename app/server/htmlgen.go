@@ -14,6 +14,9 @@ var (
 		"isLoginAndRsrcUserMatch": func(state LoginState) bool {
 			return state == LoginAndRsrcUser
 		},
+		"isLoginButNoRsrcUser": func(state LoginState) bool {
+			return state == LoginButNotRsrcUser
+		},
 		"now": func() string {
 			return time.Now().Format(timeLayout)
 		},
