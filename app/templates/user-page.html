@@ -1,19 +1,27 @@
 {{ define "content" }}
 
 <div>
-    <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
-    {{ if isLoginButNoRsrcUser .LoginState }}
-    {{ if .RsrcUser.IsFollowedByLoginUser }}
-    <form action="/users/{{ .LoginUser.AccountId }}/unfollow/{{ .RsrcUser.AccountId }}" method="POST">
-        <button type="submit" class="btn btn-outline-success">フォロー解除</button>
-    </form>
-    {{ else }}
-    <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
-        <button type="submit" class="btn btn-outline-success">フォロー</button>
-    </form>
-    {{ end }}
-    {{ end }}
-    <br />
+    <div>
+        <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
+        <a href="/users/{{ .RsrcUser.AccountId }}/follows">フォロー数：{{ len .RsrcUser.Follows }}</a>
+        <a href="/users/{{ .RsrcUser.AccountId }}/followers">フォロワー数：{{ len .RsrcUser.Followers }}</a>
+
+        <div>
+            {{ if isLoginButNoRsrcUser .LoginState }}
+            <br />
+            {{ if .RsrcUser.IsFollowedByLoginUser }}
+            <form action="/users/{{ .LoginUser.AccountId }}/unfollow/{{ .RsrcUser.AccountId }}" method="POST">
+                <button type="submit" class="btn btn-outline-success">フォロー解除</button>
+            </form>
+            {{ else }}
+            <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
+                <button type="submit" class="btn btn-outline-success">フォロー</button>
+            </form>
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+    <hr />
 
     {{ if isLoginAndRsrcUserMatch .LoginState }}
     <form action="/users/{{ .LoginUser.AccountId }}/edit-cigarette-today" method="POST">

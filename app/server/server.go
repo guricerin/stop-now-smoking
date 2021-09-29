@@ -62,6 +62,8 @@ func (s *Server) setupRouter() {
 	router.POST("/users/:account_id/edit-cigarette-today", s.editCigaretteToday)
 	router.POST("/users/:account_id/follow/:dst_account_id", s.follow)
 	router.POST("/users/:account_id/unfollow/:dst_account_id", s.unfollow)
+	// router.GET("/users/:account_id/follows", s.showFollows)
+	// router.GET("/users/:account_id/followers", s.showFollowers)
 	router.GET("/search-account", s.searchAccount)
 
 	s.router = router
@@ -122,6 +124,25 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	}
 	vm.RsrcUser = toRsrcUserViewModel(rsrcUser)
 
+	follows, followers, err := s.fetchFollowsAndFollowers(rsrcUser)
+	if err != nil {
+		Elog.Printf("fetchFollowsAndFollowers() error: %v", err)
+	}
+	for i, f := range follows {
+		Dlog.Printf("follows %v: %v", i, f)
+	}
+	for i, f := range followers {
+		Dlog.Printf("followers %v: %v", i, f)
+	}
+	vm.RsrcUser.Follows = toFollowViewModels(follows)
+	vm.RsrcUser.Followers = toFollowViewModels(followers)
+	for i, f := range vm.RsrcUser.Follows {
+		Dlog.Printf("follows %v: %v", i, f)
+	}
+	for i, f := range vm.RsrcUser.Followers {
+		Dlog.Printf("followers %v: %v", i, f)
+	}
+
 	loginUser, _, err := s.fetchAccountFromCookie(req)
 	if err != nil {
 		Ilog.Printf("access user is guest: %v", err)
@@ -136,7 +157,10 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 		vm.LoginState = LoginButNotRsrcUser
 	}
 
-	isFollowing, _ := s.followStore.IsFollowing(loginUser.AccountId, rsrcUser.AccountId)
+	isFollowing, err := s.followStore.IsFollowing(loginUser.AccountId, rsrcUser.AccountId)
+	if err != nil {
+		Elog.Printf("IsFollowing() error: %v", err)
+	}
 	vm.RsrcUser.IsFollowedByLoginUser = isFollowing
 	return
 }

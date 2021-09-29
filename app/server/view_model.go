@@ -13,12 +13,19 @@ type LoginUserViewModel struct {
 
 type totalSmokedByDateViewModel map[time.Time]uint
 
+type FollowViewModel struct {
+	Name      string
+	AccountId string
+}
+
 type RsrcUserViewModel struct {
 	Name                    string
 	AccountId               string
 	TotalSmokedCountAllDate uint
 	TotalSmokedCountToday   uint
 	TotalSmokedByDate       totalSmokedByDateViewModel
+	Follows                 []FollowViewModel
+	Followers               []FollowViewModel
 	IsFollowedByLoginUser   bool
 }
 
@@ -28,6 +35,22 @@ func toLoginUserViewModel(u entity.User) LoginUserViewModel {
 		AccountId: u.AccountId,
 	}
 	return vm
+}
+
+func toFollowViewModel(u entity.User) FollowViewModel {
+	return FollowViewModel{
+		Name:      u.Name,
+		AccountId: u.AccountId,
+	}
+}
+
+func toFollowViewModels(us []entity.User) []FollowViewModel {
+	// res := make([]FollowViewModel, len(us)) // todo: こっちだと余計な空データが先頭に混入する。原因不明
+	res := make([]FollowViewModel, 0)
+	for _, u := range us {
+		res = append(res, toFollowViewModel(u))
+	}
+	return res
 }
 
 func toRsrcUserViewModel(u entity.User) RsrcUserViewModel {
