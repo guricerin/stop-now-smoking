@@ -135,6 +135,9 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	} else {
 		vm.LoginState = LoginButNotRsrcUser
 	}
+
+	isFollowing, _ := s.followStore.IsFollowing(loginUser.AccountId, rsrcUser.AccountId)
+	vm.RsrcUser.IsFollowedByLoginUser = isFollowing
 	return
 }
 
@@ -148,5 +151,32 @@ func (s *Server) parseStartAndEndDateQuery(req *http.Request) (start, end time.T
 		return
 	}
 	end, err = time.Parse(timeLayout, endDateStr)
+	return
+}
+
+func (s *Server) fetchFollowsAndFollowers(u entity.User) (follows, followers []entity.User, err error) {
+	fs, err := s.followStore.RetrieveFollows(u.AccountId)
+	if err != nil {
+		return
+	}
+	gs, err := s.followStore.RetrieveFollowers(u.AccountId)
+	if err != nil {
+		return
+	}
+
+	for _, f := range fs {
+		u, err := s.userStore.RetrieveByAccountId(f.DstAccountId)
+		if err != nil {
+			return nil, nil, err
+		}
+		follows = append(follows, u)
+	}
+	for _, g := range gs {
+		u, err := s.userStore.RetrieveByAccountId(g.SrcAccountId)
+		if err != nil {
+			return nil, nil, err
+		}
+		followers = append(followers, u)
+	}
 	return
 }

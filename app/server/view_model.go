@@ -19,6 +19,7 @@ type RsrcUserViewModel struct {
 	TotalSmokedCountAllDate uint
 	TotalSmokedCountToday   uint
 	TotalSmokedByDate       totalSmokedByDateViewModel
+	IsFollowedByLoginUser   bool
 }
 
 func toLoginUserViewModel(u entity.User) LoginUserViewModel {

@@ -3,12 +3,15 @@
 <div>
     <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
     {{ if isLoginButNoRsrcUser .LoginState }}
-    <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
-        <button type="submit" class="btn btn-outline-success">フォロー</button>
-    </form>
+    {{ if .RsrcUser.IsFollowedByLoginUser }}
     <form action="/users/{{ .LoginUser.AccountId }}/unfollow/{{ .RsrcUser.AccountId }}" method="POST">
         <button type="submit" class="btn btn-outline-success">フォロー解除</button>
     </form>
+    {{ else }}
+    <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
+        <button type="submit" class="btn btn-outline-success">フォロー</button>
+    </form>
+    {{ end }}
     {{ end }}
     <br />
 
