@@ -344,25 +344,40 @@ func (s *Server) follow(w http.ResponseWriter, req *http.Request, ps httprouter.
 	}
 }
 
-// POST /users/:account_id/unfollow/?dst_account_id
-// func (s *Server) unfollow(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-// 	s.accessLog(req)
-// 	dstAccountId := req.URL.Query().Get("dst_account_id")
-// 	vm, loginUser := s.userRsrcViewModel(req, ps)
-// 	switch vm.LoginState {
-// 	case LoginAndRsrcUser:
-// 	case RsrcNotFound:
-// 		http.NotFound(w, req)
-// 	case Guest:
-// 		http.Error(w, "403 forbidden", http.StatusForbidden)
-// 	case LoginButNotRsrcUser:
-// 		http.Error(w, "403 forbidden", http.StatusForbidden)
-// 	default:
-// 		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
-// 		Elog.Printf("%v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// }
+// POST /users/:account_id/unfollow/:dst_account_id
+func (s *Server) unfollow(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	s.accessLog(req)
+	dstAccountId := ps.ByName("dst_account_id")
+	vm, loginUser := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case LoginAndRsrcUser:
+		if dstAccountId == loginUser.AccountId { // 自分自身はフォロー解除できない
+			str := fmt.Sprintf("can't unfollow yourself: account_id = %v", dstAccountId)
+			err := errors.New(str)
+			Elog.Printf("%v", err)
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
+		err := s.followStore.Delete(loginUser.AccountId, dstAccountId)
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		url := req.Header.Get("Referer") // 直前のURL
+		http.Redirect(w, req, url, http.StatusFound)
+	case RsrcNotFound:
+		http.NotFound(w, req)
+	case Guest:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case LoginButNotRsrcUser:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 // GET /search-account
 func (s *Server) searchAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {

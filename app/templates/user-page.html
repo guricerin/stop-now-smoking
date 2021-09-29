@@ -6,6 +6,9 @@
     <form action="/users/{{ .LoginUser.AccountId }}/follow/{{ .RsrcUser.AccountId }}" method="POST">
         <button type="submit" class="btn btn-outline-success">フォロー</button>
     </form>
+    <form action="/users/{{ .LoginUser.AccountId }}/unfollow/{{ .RsrcUser.AccountId }}" method="POST">
+        <button type="submit" class="btn btn-outline-success">フォロー解除</button>
+    </form>
     {{ end }}
     <br />
 

@@ -61,7 +61,7 @@ func (s *Server) setupRouter() {
 	router.GET("/users/:account_id", s.userPage)
 	router.POST("/users/:account_id/edit-cigarette-today", s.editCigaretteToday)
 	router.POST("/users/:account_id/follow/:dst_account_id", s.follow)
-	// router.POST("/users/:account_id/unfollow", s.unfollow)
+	router.POST("/users/:account_id/unfollow/:dst_account_id", s.unfollow)
 	router.GET("/search-account", s.searchAccount)
 
 	s.router = router

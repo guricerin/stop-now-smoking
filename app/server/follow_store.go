@@ -21,6 +21,11 @@ func (s *followStore) Create(srcAccountId, dstAccountId string) (err error) {
 	return
 }
 
+func (s *followStore) Delete(srcAccountId, dstAccountId string) (err error) {
+	_, err = s.db.Exec("delete from follows where src_account_id = ? and dst_account_id = ?", srcAccountId, dstAccountId)
+	return
+}
+
 func (s *followStore) DeleteAllByAccountId(u entity.User) (err error) {
 	table := toUserTable(u)
 	_, err = s.db.Exec("delete from follows where src_account_id = ? or dst_account_id = ?", table.AccountId, table.AccountId)
