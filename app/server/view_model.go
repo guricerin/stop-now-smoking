@@ -45,10 +45,9 @@ func toFollowViewModel(u entity.User) FollowViewModel {
 }
 
 func toFollowViewModels(us []entity.User) []FollowViewModel {
-	// res := make([]FollowViewModel, len(us)) // todo: こっちだと余計な空データが先頭に混入する。原因不明
-	res := make([]FollowViewModel, 0)
-	for _, u := range us {
-		res = append(res, toFollowViewModel(u))
+	res := make([]FollowViewModel, len(us))
+	for i, u := range us {
+		res[i] = toFollowViewModel(u)
 	}
 	return res
 }
@@ -87,11 +86,11 @@ func toSearchedUsersViewModel(query string, users []entity.User) SearchedUsersVi
 		Query:   query,
 		Results: make([]SearchedUserViewModel, len(users)),
 	}
-	for _, user := range users {
-		res.Results = append(res.Results, SearchedUserViewModel{
+	for i, user := range users {
+		res.Results[i] = SearchedUserViewModel{
 			Name:      user.Name,
 			AccountId: user.AccountId,
-		})
+		}
 	}
 	return res
 }

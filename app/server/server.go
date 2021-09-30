@@ -136,12 +136,6 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	}
 	vm.RsrcUser.Follows = toFollowViewModels(follows)
 	vm.RsrcUser.Followers = toFollowViewModels(followers)
-	for i, f := range vm.RsrcUser.Follows {
-		Dlog.Printf("follows %v: %v", i, f)
-	}
-	for i, f := range vm.RsrcUser.Followers {
-		Dlog.Printf("followers %v: %v", i, f)
-	}
 
 	loginUser, _, err := s.fetchAccountFromCookie(req)
 	if err != nil {
