@@ -128,12 +128,6 @@ func (s *Server) userRsrcViewModel(req *http.Request, ps httprouter.Params) (vm 
 	if err != nil {
 		Elog.Printf("fetchFollowsAndFollowers() error: %v", err)
 	}
-	for i, f := range follows {
-		Dlog.Printf("follows %v: %v", i, f)
-	}
-	for i, f := range followers {
-		Dlog.Printf("followers %v: %v", i, f)
-	}
 	vm.RsrcUser.Follows = toFollowViewModels(follows)
 	vm.RsrcUser.Followers = toFollowViewModels(followers)
 
