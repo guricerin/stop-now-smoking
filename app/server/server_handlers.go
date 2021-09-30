@@ -399,6 +399,26 @@ func (s *Server) showFollows(w http.ResponseWriter, req *http.Request, ps httpro
 	}
 }
 
+// GET /users/:account_id/followers
+func (s *Server) showFollowers(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	s.accessLog(req)
+	vm, _ := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case RsrcNotFound:
+		http.NotFound(w, req)
+	case Guest:
+		writeHtml(w, vm, "layout", "navbar.pub", "followers-list")
+	case LoginAndRsrcUser:
+		writeHtml(w, vm, "layout", "navbar.prv", "followers-list")
+	case LoginButNotRsrcUser:
+		writeHtml(w, vm, "layout", "navbar.prv", "followers-list")
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // GET /search-account
 func (s *Server) searchAccount(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	s.accessLog(req)
