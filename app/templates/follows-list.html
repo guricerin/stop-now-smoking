@@ -1,0 +1,20 @@
+{{ define "content" }}
+
+<div>
+    <p>
+        <a href="/users/{{ .RsrcUser.AccountId }}">{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</a>
+        のフォロー一覧
+    </p>
+
+    <ul>
+        {{ range $user := .RsrcUser.Follows }}
+        <li>
+            <a href="/users/{{ .AccountId }}">
+                {{ .Name }}@{{ .AccountId }}
+            </a>
+        </li>
+        {{ end }}
+    </ul>
+</div>
+
+{{ end }}
