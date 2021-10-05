@@ -6,15 +6,29 @@
         のフォロワー一覧
     </p>
 
-    <ul>
-        {{ range $user := .RsrcUser.Followers }}
-        <li>
-            <a href="/users/{{ .AccountId }}">
-                {{ .Name }}@{{ .AccountId }}
-            </a>
-        </li>
-        {{ end }}
-    </ul>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">アカウント名@アカウントID</th>
+                <th scope="col">本日の喫煙本数</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {{ range $user := .RsrcUser.Followers }}
+            <tr>
+                <td>
+                    <a href="/users/{{ .AccountId }}">
+                        {{ .Name }}@{{ .AccountId }}
+                    </a>
+                </td>
+                <td>
+                    {{ .SmokedCountToday }}
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
 </div>
 
 {{ end }}

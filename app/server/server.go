@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -191,4 +192,48 @@ func (s *Server) fetchFollowsAndFollowers(u entity.User) (follows, followers []e
 		followers = append(followers, u)
 	}
 	return
+}
+
+func (s *Server) fetchSmokedCountTodayForFollows(vm *ViewModel) error {
+	now := time.Now()
+	for i := range vm.RsrcUser.Follows {
+		follow := vm.RsrcUser.Follows[i]
+		cigs, err := s.cigaretteStore.RetrieveAllByUserIdAndBetweenDate(follow.UserId, now, now)
+		if err != nil {
+			return err
+		}
+
+		switch len(cigs) {
+		case 0:
+			vm.RsrcUser.Follows[i].SmokedCountToday = 0
+		case 1:
+			vm.RsrcUser.Follows[i].SmokedCountToday = cigs[0].SmokedCount
+		default:
+			msg := fmt.Sprintf("today cigs data length is not 1: actual %v", len(cigs))
+			return errors.New(msg)
+		}
+	}
+	return nil
+}
+
+func (s *Server) fetchSmokedCountTodayForFollowers(vm *ViewModel) error {
+	now := time.Now()
+	for i := range vm.RsrcUser.Followers {
+		follower := vm.RsrcUser.Followers[i]
+		cigs, err := s.cigaretteStore.RetrieveAllByUserIdAndBetweenDate(follower.UserId, now, now)
+		if err != nil {
+			return err
+		}
+
+		switch len(cigs) {
+		case 0:
+			vm.RsrcUser.Followers[i].SmokedCountToday = 0
+		case 1:
+			vm.RsrcUser.Followers[i].SmokedCountToday = cigs[0].SmokedCount
+		default:
+			msg := fmt.Sprintf("today cigs data length is not 1: actual %v", len(cigs))
+			return errors.New(msg)
+		}
+	}
+	return nil
 }

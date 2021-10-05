@@ -14,8 +14,10 @@ type LoginUserViewModel struct {
 type totalSmokedByDateViewModel map[time.Time]uint
 
 type FollowViewModel struct {
-	Name      string
-	AccountId string
+	UserId           int64 // 喫煙回数を取得したいためのフィールド
+	Name             string
+	AccountId        string
+	SmokedCountToday uint
 }
 
 type RsrcUserViewModel struct {
@@ -39,6 +41,7 @@ func toLoginUserViewModel(u entity.User) LoginUserViewModel {
 
 func toFollowViewModel(u entity.User) FollowViewModel {
 	return FollowViewModel{
+		UserId:    u.Id,
 		Name:      u.Name,
 		AccountId: u.AccountId,
 	}

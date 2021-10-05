@@ -386,6 +386,17 @@ func (s *Server) showFollows(w http.ResponseWriter, req *http.Request, ps httpro
 	switch vm.LoginState {
 	case RsrcNotFound:
 		http.NotFound(w, req)
+		return
+	}
+
+	err := s.fetchSmokedCountTodayForFollows(&vm)
+	if err != nil {
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	switch vm.LoginState {
 	case Guest:
 		writeHtml(w, vm, "layout", "navbar.pub", "follows-list")
 	case LoginAndRsrcUser:
@@ -396,6 +407,7 @@ func (s *Server) showFollows(w http.ResponseWriter, req *http.Request, ps httpro
 		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
 		Elog.Printf("%v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -406,6 +418,17 @@ func (s *Server) showFollowers(w http.ResponseWriter, req *http.Request, ps http
 	switch vm.LoginState {
 	case RsrcNotFound:
 		http.NotFound(w, req)
+		return
+	}
+
+	err := s.fetchSmokedCountTodayForFollowers(&vm)
+	if err != nil {
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	switch vm.LoginState {
 	case Guest:
 		writeHtml(w, vm, "layout", "navbar.pub", "followers-list")
 	case LoginAndRsrcUser:
