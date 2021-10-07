@@ -98,9 +98,22 @@ func toSearchedUsersViewModel(query string, users []entity.User) SearchedUsersVi
 	return res
 }
 
+type ErrorViewModel struct {
+	HasError bool
+	Msg      string
+}
+
+func toErrorViewModel(msg string) ErrorViewModel {
+	return ErrorViewModel{
+		HasError: true,
+		Msg:      msg,
+	}
+}
+
 type ViewModel struct {
 	LoginState    LoginState
 	LoginUser     LoginUserViewModel
 	RsrcUser      RsrcUserViewModel
 	SearchedUsers SearchedUsersViewModel
+	Error         ErrorViewModel
 }

@@ -101,7 +101,37 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 		return
 	}
 
-	hashedPassword, err := entity.EncryptPassword(req.FormValue("password"))
+	accountName := req.FormValue("name")
+	if !entity.VerifyAccountName(accountName) {
+		msg := "アカウント名に使用可能な文字列は、8文字以上255文字以下です。"
+		Elog.Println(msg)
+		vm := ViewModel{}
+		vm.Error = toErrorViewModel(msg)
+		writeHtml(w, vm, "layout", "navbar.pub", "signup")
+		return
+	}
+
+	accountId := req.FormValue("account_id")
+	if !entity.VerifyAccountId(accountId) {
+		msg := "アカウントIDに使用可能な文字列は、8文字以上255文字以下の半角英数字とアンダーバー（_）です。"
+		Elog.Println(msg)
+		vm := ViewModel{}
+		vm.Error = toErrorViewModel(msg)
+		writeHtml(w, vm, "layout", "navbar.pub", "signup")
+		return
+	}
+
+	plainPassword := req.FormValue("password")
+	if !entity.VerifyPlainPassword(plainPassword) {
+		msg := "パスワードに使用可能な文字列は、8文字以上255文字以下の半角英数字です。"
+		Elog.Println(msg)
+		vm := ViewModel{}
+		vm.Error = toErrorViewModel(msg)
+		writeHtml(w, vm, "layout", "navbar.pub", "signup")
+		return
+	}
+
+	hashedPassword, err := entity.EncryptPassword(plainPassword)
 	if err != nil {
 		Elog.Printf("EncryptPassword() error: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,13 +140,15 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 
 	user := entity.User{
 		Name:      req.PostFormValue("name"),
-		AccountId: req.PostFormValue("account_id"),
+		AccountId: accountId,
 		Password:  hashedPassword,
 	}
 	if s.userStore.CheckAccountIdExists(user) {
-		// todo: アカウントIDがダブっている
-		Elog.Printf("account_id is dup: %v", user.AccountId)
-		http.Error(w, "account_id is dup", http.StatusInternalServerError)
+		msg := fmt.Sprintf("%v というアカウントIDは既に使用されています。", user.AccountId)
+		Elog.Printf(msg)
+		vm := ViewModel{}
+		vm.Error = toErrorViewModel(msg)
+		writeHtml(w, vm, "layout", "navbar.pub", "signup")
 		return
 	}
 	user, err = s.userStore.Create(user)

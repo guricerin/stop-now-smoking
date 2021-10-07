@@ -13,8 +13,12 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func randomeString(n int) string {
-	const tokens = "abcdefghijklmnopqrstuvwxyz0123456789"
+const (
+	passwordTokens  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	accountIdTokens = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+)
+
+func randomeString(tokens string, n int) string {
 	var sb strings.Builder
 	k := len(tokens)
 
@@ -27,7 +31,7 @@ func randomeString(n int) string {
 }
 
 func TestCryptPassword(t *testing.T) {
-	plain := randomeString(8)
+	plain := randomeString(passwordTokens, 8)
 	hashed, err := EncryptPassword(plain)
 	require.NoError(t, err)
 	require.NotEmpty(t, hashed)
@@ -35,7 +39,7 @@ func TestCryptPassword(t *testing.T) {
 	ok := VerifyPasswordHash(hashed, plain)
 	require.True(t, ok)
 
-	wrongPlain := randomeString(8)
+	wrongPlain := randomeString(passwordTokens, 8)
 	ng := VerifyPasswordHash(hashed, wrongPlain)
 	require.False(t, ng)
 
@@ -43,4 +47,54 @@ func TestCryptPassword(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, hashed2)
 	require.NotEqual(t, hashed, hashed2)
+}
+
+func TestVerifyPlainPassword(t *testing.T) {
+	for i := 0; i < 8; i++ {
+		plain := randomeString(passwordTokens, i)
+		res := VerifyPlainPassword(plain)
+		require.False(t, res)
+	}
+
+	for i := 8; i <= 255; i++ {
+		plain := randomeString(passwordTokens, i)
+		res := VerifyPlainPassword(plain)
+		require.True(t, res)
+	}
+
+	plain := randomeString(passwordTokens, 256)
+	res := VerifyPlainPassword(plain)
+	require.False(t, res)
+}
+
+func TestVerifyAccountId(t *testing.T) {
+	plain := randomeString(accountIdTokens, 0)
+	res := VerifyAccountId(plain)
+	require.False(t, res)
+
+	plain = randomeString(accountIdTokens, 256)
+	res = VerifyAccountId(plain)
+	require.False(t, res)
+
+	for i := 1; i <= 255; i++ {
+		plain := randomeString(accountIdTokens, i)
+		res := VerifyAccountId(plain)
+		require.True(t, res)
+	}
+}
+
+func TestVerifyAccountName(t *testing.T) {
+	name := randomeString(accountIdTokens, 0)
+	res := VerifyAccountName(name)
+	require.False(t, res)
+
+	name = randomeString(accountIdTokens, 256)
+	res = VerifyAccountName(name)
+	require.False(t, res)
+
+	for i := 1; i <= 255; i++ {
+		name := randomeString(accountIdTokens, i)
+		res := VerifyAccountName(name)
+		require.True(t, res)
+	}
 }

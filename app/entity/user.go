@@ -1,6 +1,10 @@
 package entity
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	Id   int64
@@ -19,4 +23,29 @@ func EncryptPassword(plain string) (string, error) {
 func VerifyPasswordHash(hashed, plain string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(plain))
 	return err != bcrypt.ErrMismatchedHashAndPassword
+}
+
+const accountIdPattern = `[a-zA-Z0-9\_]+`
+
+func VerifyAccountId(accountId string) bool {
+	if len(accountId) > 255 {
+		return false
+	}
+	reg := regexp.MustCompile(accountIdPattern)
+	return reg.MatchString(accountId)
+}
+
+const passwordPattern = `[a-zA-Z0-9]{8,}`
+
+func VerifyPlainPassword(plain string) bool {
+	if len(plain) > 255 {
+		return false
+	}
+	reg := regexp.MustCompile(passwordPattern)
+	return reg.MatchString(plain)
+}
+
+func VerifyAccountName(name string) bool {
+	l := len(name)
+	return 0 < l && l < 256
 }
