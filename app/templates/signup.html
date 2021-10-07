@@ -13,11 +13,13 @@
             <li>他サイトのパスワードの使いまわし。</li>
         </ul>
     </div>
+    <hr />
 
     {{ if .Error.HasError }}
     <div style="color: red;">
         <p>＊エラー：{{ .Error.Msg }}</p>
     </div>
+    <hr />
     {{ end }}
 
     <div>
@@ -54,7 +56,6 @@
 
         <button class="btn btn-outline-success" type="submit">登録</button>
     </div>
-    <hr />
 
 </form>
 
