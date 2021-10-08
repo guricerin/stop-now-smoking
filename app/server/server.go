@@ -99,7 +99,8 @@ func (s *Server) createCookie(uuid string) http.Cookie {
 	cookie := http.Cookie{
 		Name:     "_cookie",
 		Value:    uuid,
-		HttpOnly: true, // JavaScriptなど非HTTPのAPIを禁止
+		HttpOnly: true,                        // JavaScriptなど非HTTPのAPIを禁止
+		Expires:  time.Now().AddDate(0, 1, 0), // 寿命は1ヶ月
 	}
 	return cookie
 }
