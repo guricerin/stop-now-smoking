@@ -42,13 +42,17 @@ func (s *Server) authenticate(w http.ResponseWriter, req *http.Request, ps httpr
 		Elog.Printf("ParseForm() error: %v", err)
 		return
 	}
-	// todo: 8文字以上の英数字
 	plainPassword := req.PostFormValue("password")
 	accountId := req.PostFormValue("account_id")
 	user, err := s.userStore.RetrieveByAccountId(accountId)
 	if err != nil {
-		// todo: account_id がちがう。が、「account_id or password is wrong」と表示する
-		Elog.Printf("@%s error: %v", accountId, err)
+		// account_id がちがう。が、「account_id or password is wrong」と表示する
+		Ilog.Printf("@%s error: %v", accountId, err)
+		msg := "アカウントIDまたはパスワードが間違っています。"
+		vm := ViewModel{
+			Error: toErrorViewModel(msg),
+		}
+		writeHtml(w, vm, "layout", "navbar.pub", "login")
 		return
 	}
 
@@ -64,8 +68,12 @@ func (s *Server) authenticate(w http.ResponseWriter, req *http.Request, ps httpr
 			http.Redirect(w, req, "/", http.StatusFound)
 		}
 	} else {
-		//todo
 		Ilog.Printf("@%s : login failed. account_id or password is wrong.", user.AccountId)
+		msg := "アカウントIDまたはパスワードが間違っています。"
+		vm := ViewModel{
+			Error: toErrorViewModel(msg),
+		}
+		writeHtml(w, vm, "layout", "navbar.pub", "login")
 	}
 }
 

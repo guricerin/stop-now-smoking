@@ -6,6 +6,13 @@
     </h2>
     <br />
 
+    {{ if .Error.HasError }}
+    <div style="color: red;">
+        <p>＊エラー：{{ .Error.Msg }}</p>
+    </div>
+    <hr />
+    {{ end }}
+
     <div class="form-group">
         <label>アカウントID（1文字以上の半角英数字）</label>
         <input type="text" name="account_id" class="form-control" placeholder="アカウントID" required>
@@ -14,6 +21,7 @@
         <label>パスワード（8文字以上の半角英数字）</label>
         <input type="password" name="password" class="form-control" placeholder="パスワード" required>
     </div>
+    <br />
     <button class="btn btn-outline-success" type="submit">ログイン</button>
 </form>
 
