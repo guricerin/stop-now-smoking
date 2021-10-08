@@ -104,7 +104,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	accountName := req.FormValue("name")
 	if !entity.VerifyAccountName(accountName) {
 		msg := "アカウント名に使用可能な文字列は、8文字以上255文字以下です。"
-		Elog.Println(msg)
+		Ilog.Println(msg)
 		vm := ViewModel{}
 		vm.Error = toErrorViewModel(msg)
 		writeHtml(w, vm, "layout", "navbar.pub", "signup")
@@ -114,7 +114,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	accountId := req.FormValue("account_id")
 	if !entity.VerifyAccountId(accountId) {
 		msg := "アカウントIDに使用可能な文字列は、8文字以上255文字以下の半角英数字とアンダーバー（_）です。"
-		Elog.Println(msg)
+		Ilog.Println(msg)
 		vm := ViewModel{}
 		vm.Error = toErrorViewModel(msg)
 		writeHtml(w, vm, "layout", "navbar.pub", "signup")
@@ -124,7 +124,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	plainPassword := req.FormValue("password")
 	if !entity.VerifyPlainPassword(plainPassword) {
 		msg := "パスワードに使用可能な文字列は、8文字以上255文字以下の半角英数字です。"
-		Elog.Println(msg)
+		Ilog.Println(msg)
 		vm := ViewModel{}
 		vm.Error = toErrorViewModel(msg)
 		writeHtml(w, vm, "layout", "navbar.pub", "signup")
@@ -145,7 +145,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	}
 	if s.userStore.CheckAccountIdExists(user) {
 		msg := fmt.Sprintf("%v というアカウントIDは既に使用されています。", user.AccountId)
-		Elog.Printf(msg)
+		Ilog.Printf(msg)
 		vm := ViewModel{}
 		vm.Error = toErrorViewModel(msg)
 		writeHtml(w, vm, "layout", "navbar.pub", "signup")
