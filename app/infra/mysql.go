@@ -14,14 +14,8 @@ type MySqlDriver struct {
 }
 
 func NewMySqlDriver(cfg *util.Config) (*MySqlDriver, error) {
-	user := cfg.DbUser
-	password := cfg.DbPassword
-	protocol := cfg.DbProtocol
-	dbName := cfg.DbName
-	option := cfg.DbConnOption
-	dsn := fmt.Sprintf("%s:%s@%s/%s?%s", user, password, protocol, dbName, option)
-	util.Ilog.Printf("dsn: %s", dsn)
-	conn, err := sql.Open("mysql", dsn)
+	util.Ilog.Printf("dsn: %s", cfg.DbUrl)
+	conn, err := sql.Open("mysql", cfg.DbUrl)
 	if err != nil {
 		err = fmt.Errorf("db open error: %s", err.Error())
 		return nil, err

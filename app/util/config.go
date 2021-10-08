@@ -3,13 +3,9 @@ package util
 import "github.com/spf13/viper"
 
 type Config struct {
-	ServerHost   string `mapstructure:"server_host"`
-	ServerPort   string `mapstructure:"server_port"`
-	DbUser       string `mapstructure:"db_user"`
-	DbPassword   string `mapstructure:"db_password"`
-	DbName       string `mapstructure:"db_name"`
-	DbProtocol   string `mapstructure:"db_protocol"`
-	DbConnOption string `mapstructure:"db_conn_option"`
+	ServerHost string `mapstructure:"server_host"`
+	ServerPort string `mapstructure:"server_port"`
+	DbUrl      string `mapstructure:"db_url"`
 }
 
 func LoadConfig(filepath string) (cfg Config, err error) {
