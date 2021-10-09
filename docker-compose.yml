@@ -14,25 +14,14 @@ services:
 
   db:
     container_name: sns-db
-    image: mysql:8.0
+    image: postgres
     volumes:
-      # - ./db/data:/var/lib/mysql # データ永続化
-      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      # - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/initdb.d:/docker-entrypoint-initdb.d
     environment:
-      MYSQL_ROOT_PASSWORD: password 
+      POSTGRES_USER: sns_user
+      POSTGRES_PASSWORD: sns123456789
+      POSTGRES_DB: sns_db
       TZ: 'Asia/Tokyo'
     ports:
-      - 3306:3306
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment: 
-      - PMA_ARBITRARY=1
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=password
-    depends_on: 
-      - db
-    ports: 
-      - 8009:80 
+      - 5432:5432

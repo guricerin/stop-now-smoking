@@ -41,11 +41,8 @@ func NewUserStore(db DbDriver) *userStore {
 
 func (repo *userStore) Create(u entity.User) (user entity.User, err error) {
 	table := toUserTable(u)
-	res, err := repo.db.Exec("insert into users (name, account_id, password) values (?, ?, ?)", table.Name, table.AccountId, table.Password)
-	if err != nil {
-		return
-	}
-	id64, err := res.LastInsertId()
+	var id64 int64
+	err = repo.db.QueryRow("insert into users (name, account_id, password) values ($1, $2, $3) returning id", table.Name, table.AccountId, table.Password).Scan(&id64)
 	if err != nil {
 		return
 	}
@@ -54,7 +51,7 @@ func (repo *userStore) Create(u entity.User) (user entity.User, err error) {
 }
 
 func (repo *userStore) CheckAccountIdExists(u entity.User) bool {
-	rows, err := repo.db.Query("select * from users where account_id = ?", u.AccountId)
+	rows, err := repo.db.Query("select * from users where account_id = $1", u.AccountId)
 	if err == nil && rows.Next() {
 		defer rows.Close()
 		return true
@@ -65,7 +62,7 @@ func (repo *userStore) CheckAccountIdExists(u entity.User) bool {
 
 func (repo *userStore) RetrieveById(id int64) (u entity.User, err error) {
 	table := userTable{}
-	err = repo.db.QueryRow("select id, name, account_id, password from users where id = ?", id).
+	err = repo.db.QueryRow("select id, name, account_id, password from users where id = $1", id).
 		Scan(&table.Id, &table.Name, &table.AccountId, &table.Password)
 	if err != nil {
 		return
@@ -76,7 +73,7 @@ func (repo *userStore) RetrieveById(id int64) (u entity.User, err error) {
 
 func (repo *userStore) RetrieveByAccountId(account_id string) (u entity.User, err error) {
 	table := userTable{}
-	err = repo.db.QueryRow("select id, name, account_id, password from users where account_id = ?", account_id).
+	err = repo.db.QueryRow("select id, name, account_id, password from users where account_id = $1", account_id).
 		Scan(&table.Id, &table.Name, &table.AccountId, &table.Password)
 	if err != nil {
 		return
@@ -86,7 +83,7 @@ func (repo *userStore) RetrieveByAccountId(account_id string) (u entity.User, er
 }
 
 func (repo *userStore) SearchAllByAccountId(account_id string) (us []entity.User, err error) {
-	rows, err := repo.db.Query("select id, name, account_id, password from users where account_id like concat(?, '%')", account_id)
+	rows, err := repo.db.Query("select id, name, account_id, password from users where account_id like '%' || $1 || '%'", account_id)
 	if err != nil {
 		return
 	}
@@ -108,6 +105,6 @@ func (repo *userStore) Update(u entity.User) (err error) {
 }
 
 func (repo *userStore) DeleteById(id int64) (err error) {
-	_, err = repo.db.Exec("delete from users where id = ?", id)
+	_, err = repo.db.Exec("delete from users where id = $1", id)
 	return
 }

@@ -41,22 +41,17 @@ func (store *sessionStore) Create(u entity.User) (sess entity.Session, err error
 		UserId:    u.Id,
 		CreatedAt: time.Now(),
 	}
-	res, err := store.db.Exec("insert into sessions (uuid, user_id, created_at) values (?, ?, ?)", table.Uuid, table.UserId, table.CreatedAt)
+	err = store.db.QueryRow("insert into sessions (uuid, user_id, created_at) values ($1, $2, $3) returning id", table.Uuid, table.UserId, table.CreatedAt).Scan(&table.Id)
 	if err != nil {
 		return
 	}
-	id64, err := res.LastInsertId()
-	if err != nil {
-		return
-	}
-	table.Id = id64
 	sess = toSessionEntity(table)
 	return
 }
 
 func (store *sessionStore) RetrieveByUuid(uuid string) (sess entity.Session, err error) {
 	table := sessionTable{}
-	err = store.db.QueryRow("select id, uuid, user_id, created_at from sessions where uuid = ?", uuid).Scan(&table.Id, &table.Uuid, &table.UserId, &table.CreatedAt)
+	err = store.db.QueryRow("select id, uuid, user_id, created_at from sessions where uuid = $1", uuid).Scan(&table.Id, &table.Uuid, &table.UserId, &table.CreatedAt)
 	if err != nil {
 		return
 	}
@@ -65,6 +60,6 @@ func (store *sessionStore) RetrieveByUuid(uuid string) (sess entity.Session, err
 }
 
 func (store *sessionStore) DeleteByUuid(uuid string) (err error) {
-	_, err = store.db.Exec("delete from sessions where uuid = ?", uuid)
+	_, err = store.db.Exec("delete from sessions where uuid = $1", uuid)
 	return
 }

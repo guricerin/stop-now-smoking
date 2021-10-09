@@ -319,7 +319,7 @@ func (s *Server) editCigaretteToday(w http.ResponseWriter, req *http.Request, ps
 		exist, err := s.cigaretteStore.ExistByUserIdAndDate(cigarette)
 		if !exist || err != nil {
 			Dlog.Printf("not exist, so create cigarette.: %v", err)
-			_, err := s.cigaretteStore.Create(cigarette)
+			err := s.cigaretteStore.Create(cigarette)
 			if err != nil {
 				Elog.Printf("%v", err)
 				http.Error(w, "500 internal server error", http.StatusInternalServerError)

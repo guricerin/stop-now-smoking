@@ -41,23 +41,15 @@ func NewCigaretteStore(db DbDriver) *cigaretteStore {
 	return &cigaretteStore{db: db}
 }
 
-func (store *cigaretteStore) Create(cigarette entity.Cigarette) (c entity.Cigarette, err error) {
+func (store *cigaretteStore) Create(cigarette entity.Cigarette) (err error) {
 	table := toCigaretteTable(cigarette)
-	res, err := store.db.Exec("insert into cigarettes (smoked_count, user_id, created_at) values (?, ?, ?)", table.SmokedCount, table.UserId, table.CreatedAt)
-	if err != nil {
-		return
-	}
-	id64, err := res.LastInsertId()
-	if err != nil {
-		return
-	}
-	c, err = store.RetrieveById(id64)
+	_, err = store.db.Exec("insert into cigarettes (smoked_count, user_id, created_at) values ($1, $2, $3)", table.SmokedCount, table.UserId, table.CreatedAt)
 	return
 }
 
 func (store *cigaretteStore) RetrieveById(id int64) (c entity.Cigarette, err error) {
 	table := cigaretteTable{}
-	err = store.db.QueryRow("select id, smoked_count, user_id, created_at from cigarettes where id = ?", id).
+	err = store.db.QueryRow("select id, smoked_count, user_id, created_at from cigarettes where id = $1", id).
 		Scan(&table.Id, &table.SmokedCount, &table.UserId, &table.CreatedAt)
 	if err != nil {
 		return
@@ -67,7 +59,7 @@ func (store *cigaretteStore) RetrieveById(id int64) (c entity.Cigarette, err err
 }
 
 func (store *cigaretteStore) RetrieveAllByUserId(id int64) ([]entity.Cigarette, error) {
-	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = ?", id)
+	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = $1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +90,7 @@ func (store *cigaretteStore) toDateFormat(start, end time.Time) (string, string)
 
 func (store *cigaretteStore) RetrieveAllByUserIdAndBetweenDate(id int64, start, end time.Time) ([]entity.Cigarette, error) {
 	startStr, endStr := store.toDateFormat(start, end)
-	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = ? and created_at between ? and ?", id, startStr, endStr)
+	rows, err := store.db.Query("select id, smoked_count, user_id, created_at from cigarettes where user_id = $1 and created_at between $2 and $3", id, startStr, endStr)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +112,7 @@ func (store *cigaretteStore) RetrieveAllByUserIdAndBetweenDate(id int64, start, 
 func (store *cigaretteStore) ExistByUserIdAndDate(cig entity.Cigarette) (bool, error) {
 	table := toCigaretteTable(cig)
 	startStr, endStr := store.toDateFormat(table.CreatedAt, table.CreatedAt)
-	rows, err := store.db.Query("select * from cigarettes where user_id = ? and created_at between ? and ?", table.UserId, startStr, endStr)
+	rows, err := store.db.Query("select * from cigarettes where user_id = $1 and created_at between $2 and $3", table.UserId, startStr, endStr)
 	if err != nil {
 		return false, err
 	} else {
@@ -132,11 +124,11 @@ func (store *cigaretteStore) ExistByUserIdAndDate(cig entity.Cigarette) (bool, e
 func (store *cigaretteStore) UpdateByUserIdAndDate(cig entity.Cigarette) (err error) {
 	table := toCigaretteTable(cig)
 	startStr, endStr := store.toDateFormat(table.CreatedAt, table.CreatedAt)
-	_, err = store.db.Exec("update cigarettes set smoked_count = ? where user_id = ? and created_at between ? and ?", table.SmokedCount, table.UserId, startStr, endStr)
+	_, err = store.db.Exec("update cigarettes set smoked_count = $1 where user_id = $2 and created_at between $3 and $4", table.SmokedCount, table.UserId, startStr, endStr)
 	return
 }
 
 func (store *cigaretteStore) DeleteAllByUserId(userId int64) (err error) {
-	_, err = store.db.Exec("delete from cigarettes where user_id = ?", userId)
+	_, err = store.db.Exec("delete from cigarettes where user_id = $1", userId)
 	return
 }

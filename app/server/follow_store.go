@@ -25,12 +25,12 @@ func NewFollowStore(db DbDriver) *followStore {
 }
 
 func (s *followStore) Create(srcAccountId, dstAccountId string) (err error) {
-	_, err = s.db.Exec("insert into follows (src_account_id, dst_account_id) values (?, ?)", srcAccountId, dstAccountId)
+	_, err = s.db.Exec("insert into follows (src_account_id, dst_account_id) values ($1, $2)", srcAccountId, dstAccountId)
 	return
 }
 
 func (s *followStore) IsFollowing(srcAccountId, dstAccountId string) (bool, error) {
-	rows, err := s.db.Query("select * from follows where src_account_id = ? and dst_account_id = ?", srcAccountId, dstAccountId)
+	rows, err := s.db.Query("select * from follows where src_account_id = $1 and dst_account_id = $2", srcAccountId, dstAccountId)
 	if err != nil {
 		return false, err
 	}
@@ -40,7 +40,7 @@ func (s *followStore) IsFollowing(srcAccountId, dstAccountId string) (bool, erro
 }
 
 func (s *followStore) RetrieveFollows(srcAccountId string) ([]entity.Follow, error) {
-	rows, err := s.db.Query("select id, src_account_id, dst_account_id from follows where src_account_id = ?", srcAccountId)
+	rows, err := s.db.Query("select id, src_account_id, dst_account_id from follows where src_account_id = $1", srcAccountId)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (s *followStore) RetrieveFollows(srcAccountId string) ([]entity.Follow, err
 }
 
 func (s *followStore) RetrieveFollowers(dstAccountId string) ([]entity.Follow, error) {
-	rows, err := s.db.Query("select id, src_account_id, dst_account_id from follows where dst_account_id = ?", dstAccountId)
+	rows, err := s.db.Query("select id, src_account_id, dst_account_id from follows where dst_account_id = $1", dstAccountId)
 	if err != nil {
 		return nil, err
 	}
@@ -78,12 +78,12 @@ func (s *followStore) RetrieveFollowers(dstAccountId string) ([]entity.Follow, e
 }
 
 func (s *followStore) Delete(srcAccountId, dstAccountId string) (err error) {
-	_, err = s.db.Exec("delete from follows where src_account_id = ? and dst_account_id = ?", srcAccountId, dstAccountId)
+	_, err = s.db.Exec("delete from follows where src_account_id = $1 and dst_account_id = $2", srcAccountId, dstAccountId)
 	return
 }
 
 func (s *followStore) DeleteAllByAccountId(u entity.User) (err error) {
 	table := toUserTable(u)
-	_, err = s.db.Exec("delete from follows where src_account_id = ? or dst_account_id = ?", table.AccountId, table.AccountId)
+	_, err = s.db.Exec("delete from follows where src_account_id = $1 or dst_account_id = $2", table.AccountId, table.AccountId)
 	return
 }

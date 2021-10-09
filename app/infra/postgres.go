@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/guricerin/stop-now-smoking/util"
+	_ "github.com/lib/pq"
 )
 
-type MySqlDriver struct {
+type PostgresDriver struct {
 	conn *sql.DB
 }
 
-func NewMySqlDriver(cfg *util.Config) (*MySqlDriver, error) {
+func NewPostgresDriver(cfg *util.Config) (*PostgresDriver, error) {
 	util.Ilog.Printf("dsn: %s", cfg.DbUrl)
-	conn, err := sql.Open("mysql", cfg.DbUrl)
+	conn, err := sql.Open("postgres", cfg.DbUrl)
 	if err != nil {
 		err = fmt.Errorf("db open error: %s", err.Error())
 		return nil, err
@@ -25,7 +25,7 @@ func NewMySqlDriver(cfg *util.Config) (*MySqlDriver, error) {
 		return nil, err
 	}
 
-	res := new(MySqlDriver)
+	res := new(PostgresDriver)
 	res.conn = conn
 	return res, nil
 }
@@ -41,27 +41,27 @@ func tryPing(conn *sql.DB) (err error) {
 	return
 }
 
-func (d *MySqlDriver) Query(query string, args ...interface{}) (rows *sql.Rows, err error) {
+func (d *PostgresDriver) Query(query string, args ...interface{}) (rows *sql.Rows, err error) {
 	rows, err = d.conn.Query(query, args...)
 	return
 }
 
-func (d *MySqlDriver) QueryRow(query string, args ...interface{}) (row *sql.Row) {
+func (d *PostgresDriver) QueryRow(query string, args ...interface{}) (row *sql.Row) {
 	row = d.conn.QueryRow(query, args...)
 	return
 }
 
-func (d *MySqlDriver) Exec(query string, args ...interface{}) (res sql.Result, err error) {
+func (d *PostgresDriver) Exec(query string, args ...interface{}) (res sql.Result, err error) {
 	res, err = d.conn.Exec(query, args...)
 	return
 }
 
-func (d *MySqlDriver) Prepare(statement string) (stmt *sql.Stmt, err error) {
+func (d *PostgresDriver) Prepare(statement string) (stmt *sql.Stmt, err error) {
 	stmt, err = d.conn.Prepare(statement)
 	return
 }
 
-func (d *MySqlDriver) Close() {
+func (d *PostgresDriver) Close() {
 	util.Ilog.Printf("db driver closing ...")
 	d.conn.Close()
 }

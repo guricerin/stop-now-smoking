@@ -18,9 +18,9 @@ func main() {
 	cfg.DbUrl = os.Getenv("DATABASE_URL")
 
 	Ilog.Println("connecting db ...")
-	db, err := infra.NewMySqlDriver(&cfg)
+	db, err := infra.NewPostgresDriver(&cfg)
 	if err != nil {
-		Elog.Fatalf("mysql driver error: %v", err)
+		Elog.Fatalf("db driver error: %v", err)
 	}
 	defer db.Close()
 
