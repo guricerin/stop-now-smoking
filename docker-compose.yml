@@ -16,7 +16,6 @@ services:
     container_name: sns-db
     image: postgres
     volumes:
-      # - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/initdb.d:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_USER: sns_user
