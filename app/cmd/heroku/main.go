@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/guricerin/stop-now-smoking/infra"
 	"github.com/guricerin/stop-now-smoking/server"
 	. "github.com/guricerin/stop-now-smoking/util"
@@ -13,6 +15,7 @@ func main() {
 		Elog.Fatalf("load config error: %v", err)
 	}
 	Dlog.Printf("cfg: %v", cfg)
+	cfg.DbUrl = os.Getenv("DATABASE_URL")
 
 	Ilog.Println("connecting db ...")
 	db, err := infra.NewMySqlDriver(&cfg)
