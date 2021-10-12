@@ -37,7 +37,7 @@ func NewServer(cfg *Config, db DbDriver) *Server {
 }
 
 func (s *Server) Run() error {
-	addr := fmt.Sprintf("%s:%s", s.cfg.ServerHost, s.cfg.ServerPort)
+	addr := fmt.Sprintf(":%s", s.cfg.ServerPort)
 	server := http.Server{
 		Addr:    addr,
 		Handler: s.router,

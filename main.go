@@ -12,7 +12,6 @@ func main() {
 	Ilog.Println("setup config ...")
 	cfg := Config{
 		DbUrl:      os.Getenv("DATABASE_URL"),
-		ServerHost: "",
 		ServerPort: os.Getenv("PORT"),
 	}
 	Dlog.Printf("cfg: %v", cfg)
