@@ -11,4 +11,4 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 
-CMD [ "go", "run", "./cmd/local/main.go" ]
+CMD [ "go", "run", "./main.go" ]

@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	Ilog.Println("loading config file ...")
+	Ilog.Println("setup config ...")
 	cfg := Config{
-		DbUrl:      os.Getenv("DATABESE_URL"),
+		DbUrl:      os.Getenv("DATABASE_URL"),
 		ServerHost: "",
 		ServerPort: os.Getenv("PORT"),
 	}

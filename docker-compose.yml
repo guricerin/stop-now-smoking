@@ -3,11 +3,14 @@ version: "3"
 services:
   app:
     container_name: sns-app
-    build: ./app
+    build: ./
     volumes:
-      - ./app:/go/src/app
+      - ./:/go/src/app
     depends_on: 
       - db
+    environment:
+      PORT: 8080
+      DATABASE_URL: "host=db user=sns_user password=sns123456789 dbname=sns_db sslmode=disable"
     ports:
       - 8000:8080
     tty: true
