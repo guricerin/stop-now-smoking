@@ -10,12 +10,12 @@ import (
 
 func main() {
 	Ilog.Println("loading config file ...")
-	cfg, err := LoadConfig("config.json")
-	if err != nil {
-		Elog.Fatalf("load config error: %v", err)
+	cfg := Config{
+		DbUrl:      os.Getenv("DATABESE_URL"),
+		ServerHost: "",
+		ServerPort: os.Getenv("PORT"),
 	}
 	Dlog.Printf("cfg: %v", cfg)
-	cfg.DbUrl = os.Getenv("DATABASE_URL")
 
 	Ilog.Println("connecting db ...")
 	db, err := infra.NewPostgresDriver(&cfg)
