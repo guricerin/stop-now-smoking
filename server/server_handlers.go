@@ -322,7 +322,6 @@ func (s *Server) editUserSetting(w http.ResponseWriter, req *http.Request, ps ht
 		if !entity.VerifyAccountName(accountName) {
 			msg := "アカウント名に使用可能な文字列は、8文字以上255文字以下です。"
 			Ilog.Println(msg)
-			vm := ViewModel{}
 			vm.Error = toErrorViewModel(msg)
 			writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
 			return
@@ -332,7 +331,6 @@ func (s *Server) editUserSetting(w http.ResponseWriter, req *http.Request, ps ht
 		if !entity.VerifyFavoriteBrand(favBrand) {
 			msg := "好きな銘柄に使用可能な文字列は、0文字以上255文字以下です。"
 			Ilog.Println(msg)
-			vm := ViewModel{}
 			vm.Error = toErrorViewModel(msg)
 			writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
 			return
