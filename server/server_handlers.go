@@ -147,7 +147,7 @@ func (s *Server) createUser(w http.ResponseWriter, req *http.Request, ps httprou
 	}
 
 	user := entity.User{
-		Name:      req.PostFormValue("name"),
+		Name:      accountName,
 		AccountId: accountId,
 		Password:  hashedPassword,
 	}
@@ -278,6 +278,79 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
 	case LoginButNotRsrcUser:
 		writeHtml(w, vm, "layout", "navbar.prv", "user-page")
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// GET /users/:account_id/setting
+func (s *Server) showUserSetting(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	s.accessLog(req)
+	vm, _ := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case LoginAndRsrcUser:
+		// ok
+		writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
+	case Guest:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case LoginButNotRsrcUser:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case RsrcNotFound:
+		http.NotFound(w, req)
+	default:
+		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// POST /users/:account_id/setting
+func (s *Server) editUserSetting(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	s.accessLog(req)
+	vm, rsrcUser := s.userRsrcViewModel(req, ps)
+	switch vm.LoginState {
+	case LoginAndRsrcUser:
+		err := req.ParseForm()
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, "500 internal server error", http.StatusInternalServerError)
+			return
+		}
+		accountName := req.FormValue("account_name")
+		if !entity.VerifyAccountName(accountName) {
+			msg := "アカウント名に使用可能な文字列は、8文字以上255文字以下です。"
+			Ilog.Println(msg)
+			vm := ViewModel{}
+			vm.Error = toErrorViewModel(msg)
+			writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
+			return
+		}
+
+		newRsrcUser := entity.User{
+			Id:        rsrcUser.Id,
+			Name:      accountName,
+			AccountId: rsrcUser.AccountId,
+			Password:  rsrcUser.Password,
+		}
+		err = s.userStore.Update(newRsrcUser)
+		if err != nil {
+			Elog.Printf("%v", err)
+			http.Error(w, "500 internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		// ok
+		url := fmt.Sprintf("/users/%s", newRsrcUser.AccountId)
+		http.Redirect(w, req, url, http.StatusFound)
+		writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
+	case Guest:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case LoginButNotRsrcUser:
+		http.Error(w, "403 forbidden", http.StatusForbidden)
+	case RsrcNotFound:
+		http.NotFound(w, req)
 	default:
 		err := fmt.Errorf("unexhausted LogState enum: %v", vm.LoginState)
 		Elog.Printf("%v", err)

@@ -3,9 +3,18 @@
 <div>
     <div>
         <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
-        <a href="/users/{{ .RsrcUser.AccountId }}/follows">フォロー数：{{ len .RsrcUser.Follows }}</a>
-        <a href="/users/{{ .RsrcUser.AccountId }}/followers">フォロワー数：{{ len .RsrcUser.Followers }}</a>
+        <div>
+            <a href="/users/{{ .RsrcUser.AccountId }}/follows">フォロー数：{{ len .RsrcUser.Follows }}</a>
+            <a href="/users/{{ .RsrcUser.AccountId }}/followers">フォロワー数：{{ len .RsrcUser.Followers }}</a>
+        </div>
 
+        {{ if isLoginAndRsrcUserMatch .LoginState }}
+        <a class="navbar-brand" href="/users/{{ .RsrcUser.AccountId }}/setting">
+            <i class="fas fa-cog"></i>
+        </a>
+        {{ end }}
+
+        <!-- フォロー or フォロー解除ボタン -->
         <div>
             {{ if isLoginButNoRsrcUser .LoginState }}
             <br />
@@ -57,6 +66,7 @@
                     <input type="date" name="end_date" value="{{ now }}" min="2000-01-01" max="2050-12-31">
                 </div>
             </div>
+            <br />
 
             <button type="submit" class="btn btn-outline-success">表示</button>
         </form>

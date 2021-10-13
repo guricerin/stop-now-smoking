@@ -101,6 +101,8 @@ func (repo *userStore) SearchAllByAccountId(account_id string) (us []entity.User
 }
 
 func (repo *userStore) Update(u entity.User) (err error) {
+	table := toUserTable(u)
+	_, err = repo.db.Exec("update users set name = $1 where id = $2", table.Name, table.Id)
 	return
 }
 

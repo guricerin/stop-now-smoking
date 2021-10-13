@@ -60,6 +60,8 @@ func (s *Server) setupRouter() {
 	router.GET("/delete-account", s.showDeleteAccount)
 	router.POST("/delete-account", s.deleteAccount)
 	router.GET("/users/:account_id", s.userPage)
+	router.GET("/users/:account_id/setting", s.showUserSetting)
+	router.POST("/users/:account_id/setting", s.editUserSetting)
 	router.POST("/users/:account_id/edit-cigarette-today", s.editCigaretteToday)
 	router.POST("/users/:account_id/follow/:dst_account_id", s.follow)
 	router.POST("/users/:account_id/unfollow/:dst_account_id", s.unfollow)
