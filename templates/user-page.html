@@ -4,6 +4,9 @@
     <div>
         <h4>{{ .RsrcUser.Name }}@{{ .RsrcUser.AccountId }}</h4>
         <div>
+            <p>好きな銘柄：{{ .RsrcUser.FavoriteBrand }}</p>
+        </div>
+        <div>
             <a href="/users/{{ .RsrcUser.AccountId }}/follows">フォロー数：{{ len .RsrcUser.Follows }}</a>
             <a href="/users/{{ .RsrcUser.AccountId }}/followers">フォロワー数：{{ len .RsrcUser.Followers }}</a>
         </div>

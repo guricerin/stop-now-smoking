@@ -10,6 +10,8 @@ create table "users" (
     "password" varchar(255) not null
 );
 
+alter table "users" add column "favorite_brand" varchar(255);
+
 create table "sessions" (
     "id" serial primary key,
     "uuid" text not null unique,

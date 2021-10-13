@@ -328,11 +328,22 @@ func (s *Server) editUserSetting(w http.ResponseWriter, req *http.Request, ps ht
 			return
 		}
 
+		favBrand := req.FormValue("favorite_brand")
+		if !entity.VerifyFavoriteBrand(favBrand) {
+			msg := "好きな銘柄に使用可能な文字列は、0文字以上255文字以下です。"
+			Ilog.Println(msg)
+			vm := ViewModel{}
+			vm.Error = toErrorViewModel(msg)
+			writeHtml(w, vm, "layout", "navbar.prv", "user-setting")
+			return
+		}
+
 		newRsrcUser := entity.User{
-			Id:        rsrcUser.Id,
-			Name:      accountName,
-			AccountId: rsrcUser.AccountId,
-			Password:  rsrcUser.Password,
+			Id:            rsrcUser.Id,
+			Name:          accountName,
+			AccountId:     rsrcUser.AccountId,
+			FavoriteBrand: favBrand,
+			Password:      rsrcUser.Password,
 		}
 		err = s.userStore.Update(newRsrcUser)
 		if err != nil {

@@ -23,6 +23,7 @@ type FollowViewModel struct {
 type RsrcUserViewModel struct {
 	Name                    string
 	AccountId               string
+	FavoriteBrand           string
 	TotalSmokedCountAllDate uint
 	TotalSmokedCountToday   uint
 	TotalSmokedByDate       totalSmokedByDateViewModel
@@ -56,9 +57,15 @@ func toFollowViewModels(us []entity.User) []FollowViewModel {
 }
 
 func toRsrcUserViewModel(u entity.User) RsrcUserViewModel {
+	favBrand := u.FavoriteBrand
+	if favBrand == "" {
+		favBrand = "<なし>"
+	}
+
 	vm := RsrcUserViewModel{
-		Name:      u.Name,
-		AccountId: u.AccountId,
+		Name:          u.Name,
+		AccountId:     u.AccountId,
+		FavoriteBrand: favBrand,
 	}
 	return vm
 }

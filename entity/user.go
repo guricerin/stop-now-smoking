@@ -11,7 +11,9 @@ type User struct {
 	Name string
 	// ユーザが任意に設定可能なID
 	AccountId string
-	Password  string
+	// 好きなタバコの銘柄
+	FavoriteBrand string
+	Password      string
 }
 
 func EncryptPassword(plain string) (string, error) {
@@ -48,4 +50,9 @@ func VerifyPlainPassword(plain string) bool {
 func VerifyAccountName(name string) bool {
 	l := len(name)
 	return 0 < l && l < 256
+}
+
+func VerifyFavoriteBrand(brand string) bool {
+	l := len(brand)
+	return l < 256
 }
