@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/guricerin/stop-now-smoking/infra"
@@ -11,7 +12,7 @@ import (
 func main() {
 	Ilog.Println("setup config ...")
 	cfg := Config{
-		DbUrl:      os.Getenv("DATABASE_URL"),
+		DbUrl:      fmt.Sprintf("%s TimeZone=Asia/Tokyo", os.Getenv("DATABASE_URL")),
 		ServerPort: os.Getenv("PORT"),
 	}
 	Dlog.Printf("cfg: %v", cfg)
