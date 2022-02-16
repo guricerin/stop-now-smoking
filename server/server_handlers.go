@@ -254,8 +254,15 @@ func (s *Server) userPage(w http.ResponseWriter, req *http.Request, ps httproute
 	}
 
 	vm.RsrcUser.TotalSmokedCountAllDate = entity.TotalSmokedCountAllDate(cigarettes)
-	vm.RsrcUser.TotalSmokedCountToday = entity.TotalSmokedCountByDate(cigarettes, time.Now())
-	vm.RsrcUser.TotalSmokedByDate = totalsSmokedByDateViewModel(cigarettes)
+	now := time.Now()
+	vm.RsrcUser.TotalSmokedCountToday = entity.TotalSmokedCountByDate(cigarettes, now)
+	cigarettesByWeek, err := s.cigaretteStore.RetrieveAllByUserIdAndBetweenDate(rsrcUser.Id, now.AddDate(0, 0, -6), now)
+	if err != nil {
+		Elog.Printf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	vm.RsrcUser.TotalSmokedByDate = totalsSmokedByDateViewModel(cigarettesByWeek)
 
 	// URLクエリで指定された日付範囲内のデータフェッチ
 	startDate, endDate, err := s.parseStartAndEndDateQuery(req)

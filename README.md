@@ -15,6 +15,8 @@ using heroku
 - deploy to heroku
 
 ```bash
+$ go build -o ./bin/stop-now-smoking .
+
 $ git push heroku main
 # or
 $ git push heroku <herokuに反映させたいoriginのブランチ名>:main

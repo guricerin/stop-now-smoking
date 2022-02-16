@@ -70,7 +70,6 @@ func toRsrcUserViewModel(u entity.User) RsrcUserViewModel {
 	return vm
 }
 
-// todo: 日時が新しい順に並び替える
 func totalsSmokedByDateViewModel(cigs []entity.Cigarette) totalSmokedByDateViewModel {
 	groupByDate := entity.GroupCigarettesByDate(cigs)
 	res := make(totalSmokedByDateViewModel, len(groupByDate))
